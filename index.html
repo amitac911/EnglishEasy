@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnglishEasy.ttt — Luyện Nghe Chép Chính Tả Tiếng Anh</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: rgba(30, 41, 59, 0.82);
+      --surface-light: #334155;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      background: linear-gradient(rgba(11, 17, 32, 0.78), rgba(11, 17, 32, 0.9)), url('bg.jpg') center/cover no-repeat fixed, var(--bg);
+      color: var(--text); min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 14px 24px;
+      display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: #fff; }
+    .brand span { background: linear-gradient(135deg, #3b82f6, #10b981); padding: 3px 10px; border-radius: 8px; font-size: 0.8rem; }
+    .stats-bar { display: flex; gap: 14px; align-items: center; font-size: 0.9rem; color: var(--muted); }
+    .streak-pill { background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 4px 10px; border-radius: 99px; font-weight: 700; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    main { max-width: 980px; width: 100%; margin: 24px auto; padding: 0 16px; flex: 1; }
+    .hero { text-align: center; margin-bottom: 28px; }
+    .hero h1 { font-size: 2rem; margin-bottom: 8px; background: linear-gradient(90deg, #60a5fa, #34d399); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: var(--muted); font-size: 1rem; }
+
+    .filter-levels { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .level-btn {
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 16px; border-radius: 99px; cursor: pointer; font-weight: 600; transition: 0.2s;
+    }
+    .level-btn.active, .level-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .course-card {
+      background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .course-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; width: fit-content; }
+    .badge-a1 { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-a2 { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .badge-b1 { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-b2 { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+    .course-card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+    .course-card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; line-height: 1.4; }
+    .progress-wrap { background: #0f172a; height: 6px; border-radius: 4px; overflow: hidden; margin-top: auto; }
+    .progress-fill { background: var(--success); height: 100%; transition: width 0.3s; }
+    .card-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
+
+    /* Workspace & Animations */
+    .workspace { display: none; background: var(--surface); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
+    .workspace.active { display: block; }
+    .ws-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .back-btn { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+
+    .audio-panel {
+      background: rgba(15, 23, 42, 0.85); border-radius: 16px; padding: 18px; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px;
+    }
+    .play-group { display: flex; align-items: center; gap: 10px; }
+    .btn-play {
+      background: var(--primary); color: #fff; border: none; padding: 12px 22px; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .settings-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    select { background: #1e293b; color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; }
+
+    textarea {
+      width: 100%; background: rgba(15, 23, 42, 0.9); border: 2px solid var(--border); border-radius: 14px;
+      color: #fff; font-size: 1.15rem; padding: 16px; min-height: 110px; resize: vertical; outline: none;
+      line-height: 1.5; margin-bottom: 14px; transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    textarea:focus { border-color: var(--primary); }
+
+    /* Hiệu ứng Đúng / Sai */
+    @keyframes shakeError {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    @keyframes pulseSuccess {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { transform: scale(1.01); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .input-error { border-color: var(--danger) !important; animation: shakeError 0.4s ease; }
+    .input-success { border-color: var(--success) !important; animation: pulseSuccess 0.6s ease; }
+
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .btn { padding: 10px 18px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+    .btn-check { background: var(--success); color: #fff; }
+    .btn-hint { background: var(--warning); color: #0f172a; }
+    .btn-next { background: var(--primary); color: #fff; margin-left: auto; }
+    .btn-secondary { background: var(--surface-light); color: #fff; }
+
+    .feedback-box { background: rgba(15, 23, 42, 0.92); border-radius: 14px; padding: 18px; border: 1px solid var(--border); display: none; }
+    .feedback-box.show { display: block; }
+    .diff-result { font-size: 1.15rem; line-height: 1.8; margin-bottom: 12px; }
+    .word-ok { color: #34d399; font-weight: 600; }
+    .word-err { color: #f87171; text-decoration: line-through; background: rgba(239, 68, 68, 0.15); padding: 2px 5px; border-radius: 4px; }
+    .word-miss { color: #fbbf24; background: rgba(245, 158, 11, 0.15); padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .translation { color: var(--muted); font-size: 0.95rem; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 8px; }
+
+    /* Hạt pháo hoa chúc mừng */
+    .confetti { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: fall 1.2s ease-out forwards; }
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(220px) rotate(540deg); opacity: 0; }
+    }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal.open { display: flex; }
+    .modal-card { background: #1e293b; border-radius: 18px; max-width: 540px; width: 100%; padding: 24px; border: 1px solid var(--border); }
+    footer { text-align: center; padding: 20px; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">🎧 EnglishEasy.ttt <span>PRO</span></div>
+  <div class="stats-bar">
+    <span class="streak-pill">🔥 Chuỗi đúng: <span id="comboCount">0</span></span>
+    <span>Đã thuộc: <strong id="totalDone">0</strong> câu</span>
+    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" onclick="openCustomModal()">+ Tự nhập bài</button>
+  </div>
+</header>
+
+<main>
+  <section id="libraryView">
+    <div class="hero">
+      <h1>Luyện Nghe Chép Chính Tả Tiếng Anh</h1>
+      <p>Hệ thống bài nghe đa cấp độ — Chấm điểm từng từ & phản hồi tức thì.</p>
+    </div>
+
+    <div class="filter-levels">
+      <button class="level-btn active" onclick="filterCourses('ALL', this)">Tất cả chủ đề</button>
+      <button class="level-btn" onclick="filterCourses('A1', this)">A1 - Cơ bản</button>
+      <button class="level-btn" onclick="filterCourses('A2', this)">A2 - Giao tiếp</button>
+      <button class="level-btn" onclick="filterCourses('B1', this)">B1 - Công việc</button>
+      <button class="level-btn" onclick="filterCourses('B2', this)">B2 - IELTS / Tin tức</button>
+    </div>
+
+    <div class="course-grid" id="courseGrid"></div>
+  </section>
+
+  <section id="workspaceView" class="workspace">
+    <div class="ws-header">
+      <button class="back-btn" onclick="backToLibrary()">← Danh sách bài học</button>
+      <div>
+        <strong id="wsTitle">Chủ đề</strong> · <span id="wsCounter" style="color: var(--primary); font-weight: 700;">Câu 1/5</span>
+      </div>
+    </div>
+
+    <div class="audio-panel">
+      <div class="play-group">
+        <button class="btn-play" onclick="speakCurrent()">🔊 Nghe câu này (Ctrl)</button>
+        <button class="btn btn-secondary" onclick="speakSlow()">🐢 Nghe chậm</button>
+      </div>
+      <div class="settings-group">
+        <select id="accentSelect">
+          <option value="en-US">Giọng Mỹ (US)</option>
+          <option value="en-GB">Giọng Anh (UK)</option>
+        </select>
+        <select id="rateSelect">
+          <option value="1">Tốc độ: 1.0x</option>
+          <option value="0.85">Tốc độ: 0.85x</option>
+          <option value="0.7">Tốc độ: 0.7x</option>
+          <option value="1.15">Tốc độ: 1.15x</option>
+        </select>
+      </div>
+    </div>
+
+    <textarea id="userInput" placeholder="Nghe và gõ lại chính xác câu tiếng Anh bạn nghe được..."></textarea>
+
+    <div class="action-row">
+      <button class="btn btn-check" onclick="checkAnswer()">✓ Kiểm tra (Enter)</button>
+      <button class="btn btn-hint" onclick="showHint()">💡 Gợi ý từ tiếp theo</button>
+      <button class="btn btn-secondary" onclick="revealAnswer()">👁 Xem đáp án</button>
+      <button class="btn btn-next" onclick="nextSentence()">Câu tiếp theo →</button>
+    </div>
+
+    <div id="feedbackBox" class="feedback-box">
+      <div id="scoreBadge" style="font-weight: 700; margin-bottom: 8px;"></div>
+      <div id="diffResult" class="diff-result"></div>
+      <div id="translationText" class="translation"></div>
+    </div>
+  </section>
+</main>
+
+<div id="customModal" class="modal">
+  <div class="modal-card">
+    <h3 style="margin-bottom: 10px;">Tạo bài luyện nghe riêng</h3>
+    <textarea id="customText" placeholder="Dán các câu tiếng Anh vào đây (mỗi câu xuống dòng)..."></textarea>
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button class="btn btn-secondary" onclick="closeCustomModal()">Hủy</button>
+      <button class="btn btn-check" onclick="startCustomLesson()">Bắt đầu luyện tập</button>
+    </div>
+  </div>
+</div>
+
+<footer>EnglishEasy.ttt — Nền tảng luyện nghe tiếng Anh miễn phí cho mọi người.</footer>
+
+<!-- Nạp kho dữ liệu mở rộng hàng nghìn câu từ file lessons.js nếu có -->
+<script src="lessons.js"></script>
+<script>
+  // BỘ TẠO ÂM THANH PHẢN HỒI ĐÚNG / SAI BẰNG WEB AUDIO API
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playEffectSound(isSuccess) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (isSuccess) {
+      // Tiếng Ting-ting vui tai
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12); // A5
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.45);
+    } else {
+      // Tiếng Bụp trầm báo lỗi
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(95, audioCtx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.28);
+    }
+  }
+
+  function spawnConfetti() {
+    const colors = ['#34d399', '#60a5fa', '#fbbf24', '#f472b6', '#a78bfa'];
+    for (let i = 0; i < 28; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.style.left = (20 + Math.random() * 60) + 'vw';
+      el.style.top = '35vh';
+      el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      el.style.transform = `translateX(${(Math.random() - 0.5) * 200}px)`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1300);
+    }
+  }
+
+  // KHO BÀI HỌC MẶC ĐỊNH + GỘP TỰ ĐỘNG TỪ LESSONS.JS
+  const DEFAULT_COURSES = [
+    {
+      id: "daily-a1", level: "A1", title: "Chào hỏi & Đời sống hàng ngày",
+      desc: "Các mẫu câu giao tiếp ngắn gọn, tốc độ vừa phải dành cho người mới bắt đầu.",
+      sentences: [
+        { en: "Good morning, how are you doing today?", vi: "Chào buổi sáng, hôm nay bạn thế nào?" },
+        { en: "I usually wake up at six thirty in the morning.", vi: "Tôi thường thức dậy lúc 6 giờ 30 sáng." },
+        { en: "Could you please tell me where the nearest station is?", vi: "Bạn có thể chỉ giúp tôi nhà ga gần nhất ở đâu không?" },
+        { en: "I would like a cup of hot coffee without sugar.", vi: "Tôi muốn một tách cà phê nóng không đường." },
+        { en: "What time does the supermarket close tonight?", vi: "Tối nay siêu thị đóng cửa lúc mấy giờ?" }
+      ]
+    },
+    {
+      id: "travel-a2", level: "A2", title: "Du lịch & Đặt phòng khách sạn",
+      desc: "Tình huống thực tế tại sân bay, nhà hàng và khi hỏi đường ở nước ngoài.",
+      sentences: [
+        { en: "I have a reservation under the name of Nguyen.", vi: "Tôi có đặt phòng trước dưới tên Nguyễn." },
+        { en: "How long does it take to get to the airport by taxi?", vi: "Đi taxi ra sân bay mất bao lâu?" },
+        { en: "Excuse me, I think there is a mistake in our bill.", vi: "Xin lỗi, tôi nghĩ hóa đơn của chúng tôi có nhầm lẫn." },
+        { en: "Don't forget to bring your passport and boarding pass.", vi: "Đừng quên mang theo hộ chiếu và thẻ lên máy bay của bạn." },
+        { en: "Can you recommend any local dishes around here?", vi: "Bạn có thể gợi ý vài món đặc sản địa phương quanh đây không?" }
+      ]
+    }
+  ];
+
+  // Nếu có file lessons.js, tự động chia nhỏ thành từng bài 10 câu
+  const ALL_COURSES = [...DEFAULT_COURSES];
+  if (window.EXTRA_LESSONS && Array.isArray(window.EXTRA_LESSONS)) {
+    window.EXTRA_LESSONS.forEach(pack => {
+      const chunkSize = 10;
+      for (let i = 0; i < pack.items.length; i += chunkSize) {
+        const chunk = pack.items.slice(i, i + chunkSize).map(line => {
+          const [en, vi] = line.split('|');
+          return { en: (en || '').trim(), vi: (vi || '').trim() };
+        });
+        const partNum = Math.floor(i / chunkSize) + 1;
+        ALL_COURSES.push({
+          id: `${pack.id}_p${partNum}`,
+          level: pack.level,
+          title: `${pack.title} (Phần ${partNum})`,
+          desc: `${pack.desc} · ${chunk.length} câu luyện tập.`,
+          sentences: chunk
+        });
+      }
+    });
+  }
+
+  let completedMap = JSON.parse(localStorage.getItem('dictation_progress_v1') || '{}');
+  let activeCourse = null;
+  let currentIdx = 0;
+  let currentFilter = 'ALL';
+  let comboStreak = 0;
+
+  function saveProgress() {
+    localStorage.setItem('dictation_progress_v1', JSON.stringify(completedMap));
+    document.getElementById('totalDone').textContent = Object.keys(completedMap).length;
+  }
+
+  function renderCourses() {
+    const grid = document.getElementById('courseGrid');
+    grid.innerHTML = '';
+    const list = currentFilter === 'ALL' ? ALL_COURSES : ALL_COURSES.filter(c => c.level === currentFilter);
+
+    list.forEach(course => {
+      const doneCount = course.sentences.filter((_, i) => completedMap[`${course.id}_${i}`]).length;
+      const pct = Math.round((doneCount / course.sentences.length) * 100);
+      const card = document.createElement('div');
+      card.className = 'course-card';
+      card.onclick = () => startCourse(course);
+      card.innerHTML = `
+        <div>
+          <span class="badge badge-${course.level.toLowerCase()}">Trình độ ${course.level}</span>
+          <h3>${course.title}</h3>
+          <p>${course.desc}</p>
+        </div>
+        <div>
+          <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="card-footer"><span>${doneCount}/${course.sentences.length} câu</span><span>${pct}% hoàn thành</span></div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    saveProgress();
+  }
+
+  function filterCourses(level, btn) {
+    currentFilter = level;
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCourses();
+  }
+
+  function startCourse(course) {
+    activeCourse = course;
+    const firstUndone = course.sentences.findIndex((_, i) => !completedMap[`${course.id}_${i}`]);
+    currentIdx = firstUndone !== -1 ? firstUndone : 0;
+    document.getElementById('libraryView').style.display = 'none';
+    document.getElementById('workspaceView').classList.add('active');
+    loadSentence();
+  }
+
+  function backToLibrary() {
+    window.speechSynthesis.cancel();
+    document.getElementById('workspaceView').classList.remove('active');
+    document.getElementById('libraryView').style.display = 'block';
+    renderCourses();
+  }
+
+  function loadSentence() {
+    const inputEl = document.getElementById('userInput');
+    document.getElementById('wsTitle').textContent = activeCourse.title;
+    document.getElementById('wsCounter').textContent = `Câu ${currentIdx + 1}/${activeCourse.sentences.length}`;
+    inputEl.value = '';
+    inputEl.classList.remove('input-error', 'input-success');
+    document.getElementById('feedbackBox').classList.remove('show');
+    inputEl.focus();
+    setTimeout(speakCurrent, 300);
+  }
+
+  function speakText(text, customRate) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = document.getElementById('accentSelect').value;
+    utter.rate = customRate || parseFloat(document.getElementById('rateSelect').value);
+    window.speechSynthesis.speak(utter);
+  }
+
+  function speakCurrent() { if (activeCourse) speakText(activeCourse.sentences[currentIdx].en); }
+  function speakSlow() { if (activeCourse) speakText(activeCourse.sentences[currentIdx].en, 0.65); }
+  function cleanWord(w) { return w.toLowerCase().replace(/[.,!?;:"'()]/g, '').trim(); }
+
+  function checkAnswer() {
+    const targetObj = activeCourse.sentences[currentIdx];
+    const targetWords = targetObj.en.split(/\s+/);
+    const inputEl = document.getElementById('userInput');
+    const userRaw = inputEl.value.trim();
+    const userWords = userRaw ? userRaw.split(/\s+/) : [];
+
+    let correctCount = 0;
+    let html = [];
+    targetWords.forEach((tWord, idx) => {
+      const uWord = userWords[idx];
+      if (uWord && cleanWord(uWord) === cleanWord(tWord)) {
+        correctCount++;
+        html.push(`<span class="word-ok">${tWord}</span>`);
+      } else if (uWord) {
+        html.push(`<span class="word-err">${uWord}</span> <span class="word-miss">${tWord}</span>`);
+      } else {
+        html.push(`<span class="word-miss">${tWord}</span>`);
+      }
+    });
+
+    const accuracy = Math.round((correctCount / targetWords.length) * 100);
+    const scoreBadge = document.getElementById('scoreBadge');
+
+    // Reset animation class để kích hoạt lại hiệu ứng
+    inputEl.classList.remove('input-error', 'input-success');
+    void inputEl.offsetWidth;
+
+    if (accuracy === 100) {
+      comboStreak++;
+      document.getElementById('comboCount').textContent = comboStreak;
+      inputEl.classList.add('input-success');
+      playEffectSound(true);
+      spawnConfetti();
+      scoreBadge.innerHTML = `<span style="color:var(--success)">🎉 Chính xác 100%! (+1 chuỗi đúng)</span>`;
+      if (activeCourse.id !== 'custom') {
+        completedMap[`${activeCourse.id}_${currentIdx}`] = true;
+        saveProgress();
+      }
+    } else {
+      comboStreak = 0;
+      document.getElementById('comboCount').textContent = 0;
+      inputEl.classList.add('input-error');
+      playEffectSound(false);
+      scoreBadge.innerHTML = `<span style="color:var(--danger)">❌ Chưa khớp (${accuracy}%) — Sửa lại các từ màu vàng/đỏ nhé:</span>`;
+    }
+
+    document.getElementById('diffResult').innerHTML = html.join(' ');
+    document.getElementById('translationText').textContent = targetObj.vi ? `Dịch nghĩa: ${targetObj.vi}` : '';
+    document.getElementById('feedbackBox').classList.add('show');
+  }
+
+  function showHint() {
+    const targetWords = activeCourse.sentences[currentIdx].en.split(/\s+/);
+    const currentVal = document.getElementById('userInput').value.trim();
+    const currentWords = currentVal ? currentVal.split(/\s+/) : [];
+    for (let i = 0; i < targetWords.length; i++) {
+      if (!currentWords[i] || cleanWord(currentWords[i]) !== cleanWord(targetWords[i])) {
+        currentWords[i] = targetWords[i];
+        document.getElementById('userInput').value = currentWords.join(' ') + ' ';
+        document.getElementById('userInput').focus();
+        return;
+      }
+    }
+  }
+
+  function revealAnswer() {
+    const targetObj = activeCourse.sentences[currentIdx];
+    document.getElementById('scoreBadge').innerHTML = `<span style="color:#38BDF8">Đáp án chuẩn:</span>`;
+    document.getElementById('diffResult').innerHTML = `<span class="word-ok">${targetObj.en}</span>`;
+    document.getElementById('translationText').textContent = targetObj.vi ? `Dịch nghĩa: ${targetObj.vi}` : '';
+    document.getElementById('feedbackBox').classList.add('show');
+  }
+
+  function nextSentence() {
+    if (currentIdx < activeCourse.sentences.length - 1) {
+      currentIdx++;
+      loadSentence();
+    } else {
+      alert('Chúc mừng! Bạn đã hoàn thành toàn bộ phần này.');
+      backToLibrary();
+    }
+  }
+
+  function openCustomModal() { document.getElementById('customModal').classList.add('open'); }
+  function closeCustomModal() { document.getElementById('customModal').classList.remove('open'); }
+  function startCustomLesson() {
+    const raw = document.getElementById('customText').value.trim();
+    if (!raw) return alert('Vui lòng nhập ít nhất 1 câu tiếng Anh!');
+    const lines = raw.split(/\n+|(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
+    closeCustomModal();
+    startCourse({ id: 'custom', level: 'A1', title: 'Bài luyện tập tự tạo', sentences: lines.map(en => ({ en, vi: '' })) });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('workspaceView').classList.contains('active')) return;
+    if (e.key === 'Control') { e.preventDefault(); speakCurrent(); }
+    else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); checkAnswer(); }
+  });
+
+  renderCourses();
+</script>
+</body>
+</html>
