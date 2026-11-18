@@ -373,8 +373,8 @@
 
         <div id="feedbackArea" class="feedback-area"></div>
 
-        <div class="shortcut-hint">
-          Phím tắt: <kbd>Ctrl</kbd> + <kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Alt</kbd> + <kbd>H</kbd> Gợi ý từ
+        <div class="shortcut-hint" id="shortcutHintText">
+          Phím tắt: <kbd>Tab</kbd> hoặc <kbd>Ctrl</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Alt</kbd>+<kbd>H</kbd> Gợi ý từ
         </div>
       </div>
 
@@ -1067,6 +1067,19 @@
     const vi = (parts[1] || 'Chưa có nghĩa tiếng Việt').trim();
     return { en, vi, isWord: en.split(/\s+/).length <= 3 };
   }
+const isMacOS = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  const hintEl = document.getElementById('shortcutHintText');
+  if (hintEl && isMacOS) {
+    hintEl.innerHTML = 'Phím tắt Mac: <kbd>Tab</kbd> hoặc <kbd>Option</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Option</kbd>+<kbd>H</kbd> Gợi ý từ';
+  }
+
+  window.addEventListener('popstate', () => {
+    const inPractice = !document.getElementById('practiceView').classList.contains('hidden');
+    const inAdmin = !document.getElementById('adminView').classList.contains('hidden');
+    if (inPractice || inAdmin) {
+      goHome(true);
+    }
+  });
 
   function startLesson(lesson) {
     currentLesson = lesson;
@@ -1077,6 +1090,9 @@
       const doneArr = Array.isArray(progressMap[lesson.id]) ? progressMap[lesson.id] : [];
       currentIndex = 0;
       for (let i = 0; i < activeItems.length; i++) { if (!doneArr.includes(i)) { currentIndex = i; break; } }
+    }
+    if (location.hash !== '#practice') {
+      history.pushState({ view: 'practice' }, '', '#practice');
     }
     document.getElementById('homeView').classList.add('hidden');
     document.getElementById('adminView').classList.add('hidden');
@@ -1095,9 +1111,12 @@
     loadCurrentItem();
   }
 
-  function goHome() {
+  function goHome(fromPopState = false) {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     if (adminUnsubscribe) { adminUnsubscribe(); adminUnsubscribe = null; }
+    if (!fromPopState && location.hash) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
     document.getElementById('practiceView').classList.add('hidden');
     document.getElementById('adminView').classList.add('hidden');
     document.getElementById('homeView').classList.remove('hidden');
@@ -1105,205 +1124,20 @@
     renderLessons();
     updateHeaderStats();
   }
-
-  function loadCurrentItem() {
-    justCheckedCorrect = false;
-    isAnswerRevealed = false;
-    updateAnswerRevealUI();
-    const item = parseItem(activeItems[currentIndex]);
-    document.getElementById('itemCounter').textContent = `Câu ${currentIndex + 1} / ${activeItems.length}`;
-    document.getElementById('itemTypeBadge').textContent = item.isWord ? '🔤 Từ vựng' : '💬 Mẫu câu';
-    document.getElementById('viMeaningText').textContent = item.vi;
-    document.getElementById('userInput').value = '';
-    document.getElementById('feedbackArea').style.display = 'none';
-    document.getElementById('userInput').focus();
-    toggleMeaningVisibility();
-    setTimeout(() => speakCurrent(), 250);
-  }
-
-  function toggleMeaningVisibility() {
-    document.getElementById('meaningBox').style.display = document.getElementById('hideMeaningToggle').checked ? 'none' : 'flex';
-  }
-
-  function setSpeed(rate, btn) {
-    speechRate = rate;
-    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    speakCurrent();
-  }
-
-  function speakText(text) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US'; utter.rate = speechRate; utter.volume = 1.0;
-    const voiceIdx = document.getElementById('voiceSelect').value;
-    if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
-    const wave = document.getElementById('waveBars');
-    utter.onstart = () => wave && wave.classList.add('speaking');
-    utter.onend = () => wave && wave.classList.remove('speaking');
-    utter.onerror = () => wave && wave.classList.remove('speaking');
-    window.speechSynthesis.speak(utter);
-  }
-
-  function speakCurrent() {
-    if (currentLesson && activeItems[currentIndex]) speakText(parseItem(activeItems[currentIndex]).en);
-  }
-
-  function toggleAnswerReveal() { isAnswerRevealed = !isAnswerRevealed; updateAnswerRevealUI(); }
-  function updateAnswerRevealUI() {
-    const box = document.getElementById('answerRevealBox');
-    const btn = document.getElementById('toggleAnswerBtn');
-    if (isAnswerRevealed && currentLesson) {
-      document.getElementById('answerRevealText').textContent = parseItem(activeItems[currentIndex]).en;
-      box.style.display = 'block'; btn.innerHTML = '🙈 Ẩn đáp án'; btn.classList.add('btn-warning');
-    } else {
-      box.style.display = 'none'; btn.innerHTML = '👁️ Hiện đáp án'; btn.classList.remove('btn-warning');
-    }
-  }
-
-  function normalizeWords(str) {
-    return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"]/g, '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
-  }
-
-  function hintNextWord() {
-    const targetWords = parseItem(activeItems[currentIndex]).en.split(' ');
-    const typedWords = document.getElementById('userInput').value.trim() ? document.getElementById('userInput').value.trim().split(/\s+/) : [];
-    let nextIdx = 0;
-    while (nextIdx < typedWords.length && nextIdx < targetWords.length && normalizeWords(typedWords[nextIdx])[0] === normalizeWords(targetWords[nextIdx])[0]) nextIdx++;
-    if (nextIdx < targetWords.length) {
-      document.getElementById('userInput').value = targetWords.slice(0, nextIdx + 1).join(' ') + ' ';
-      document.getElementById('userInput').focus();
-    }
-  }
-
-  function addNoteToSidebar(rawItem, lessonId) {
-    const parsed = parseItem(rawItem);
-    if (!savedNotebook.some(n => n.en.toLowerCase() === parsed.en.toLowerCase())) {
-      savedNotebook.unshift({ en: parsed.en, vi: parsed.vi, lessonId, note: '' });
-      localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook));
-    }
-    renderNotebookSidebar();
-    updateHeaderStats();
-  }
-
-  function manualNoteCurrent() {
-    if (!currentLesson) return;
-    addNoteToSidebar(activeItems[currentIndex], currentLesson.id);
-    syncProgressToCloud();
-  }
-
-  function switchNotebookTab(tab) {
-    activeNotebookTab = tab;
-    document.getElementById('tabCurrentLesson').classList.toggle('active', tab === 'current');
-    document.getElementById('tabAllSaved').classList.toggle('active', tab === 'all');
-    renderNotebookSidebar();
-  }
-
-  function renderNotebookSidebar() {
-    if (!currentLesson) return;
-    const listEl = document.getElementById('notebookList');
-    const currentItems = savedNotebook.filter(n => n.lessonId === currentLesson.id);
-    document.getElementById('nbCurrentCount').textContent = currentItems.length;
-    document.getElementById('nbAllCount').textContent = savedNotebook.length;
-    const displayList = activeNotebookTab === 'current' ? currentItems : savedNotebook;
-    if (displayList.length === 0) {
-      listEl.innerHTML = `<div class="nb-empty">Chưa có mục nào.<br>Trả lời đúng hoặc bấm "📌 Lưu sổ tay" để note tự động sang đây!</div>`;
-      return;
-    }
-    listEl.innerHTML = '';
-    displayList.forEach(item => {
-      const div = document.createElement('div'); div.className = 'notebook-item';
-      const top = document.createElement('div'); top.className = 'nb-item-top';
-      const en = document.createElement('span'); en.className = 'nb-en'; en.textContent = item.en;
-      const btn = document.createElement('button'); btn.className = 'btn btn-sm'; btn.textContent = '🔊'; btn.onclick = () => speakText(item.en);
-      top.append(en, btn);
-      const vi = document.createElement('div'); vi.className = 'nb-vi'; vi.textContent = `👉 ${item.vi}`;
-      const inp = document.createElement('input'); inp.className = 'nb-note-input'; inp.placeholder = '✏️ Ghi chú thêm...'; inp.value = item.note || '';
-      inp.onchange = (e) => { item.note = e.target.value; localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook)); syncProgressToCloud(); };
-      div.append(top, vi, inp);
-      listEl.appendChild(div);
-    });
-  }
-
-  function copyNotebook() {
-    const list = activeNotebookTab === 'current' ? savedNotebook.filter(n => currentLesson && n.lessonId === currentLesson.id) : savedNotebook;
-    if (list.length === 0) return alert('Sổ tay đang trống!');
-    navigator.clipboard.writeText(list.map((it, i) => `${i + 1}. ${it.en} : ${it.vi}${it.note ? ' (' + it.note + ')' : ''}`).join('\n'))
-      .then(() => alert(`✅ Đã copy ${list.length} mục! Dán ngay ra Zalo hoặc Word.`));
-  }
-
-  function checkAnswer() {
-    const rawItem = activeItems[currentIndex];
-    const targetNorm = normalizeWords(parseItem(rawItem).en);
-    const userNorm = normalizeWords(document.getElementById('userInput').value);
-    const feedback = document.getElementById('feedbackArea');
-    const cardBox = document.getElementById('practiceCardBox');
-    feedback.style.display = 'block';
-
-    let html = '<div style="margin-bottom:8px; font-weight:600;">Kết quả đối chiếu:</div><div>';
-    let allCorrect = (targetNorm.length === userNorm.length);
-    targetNorm.forEach((word, idx) => {
-      if (userNorm[idx] === word) html += `<span class="word-chip word-ok">${word}</span>`;
-      else if (userNorm[idx]) { html += `<span class="word-chip word-err">${userNorm[idx]}</span><span class="word-chip word-miss">${word}</span>`; allCorrect = false; }
-      else { html += `<span class="word-chip word-miss">___</span>`; allCorrect = false; }
-    });
-    html += '</div>';
-
-    cardBox.classList.remove('glow-ok', 'shake-err');
-    void cardBox.offsetWidth;
-
-    if (allCorrect) {
-      playTone('success');
-      streak++;
-      if (streak > bestStreak) { bestStreak = streak; localStorage.setItem('ee_best_streak', String(bestStreak)); }
-      justCheckedCorrect = true;
-      cardBox.classList.add('glow-ok');
-      triggerRandomSticker('correct', streak);
-      html += `<div style="margin-top:10px; color:#34d399; font-weight:700;">🎉 Chính xác 100%! Đã lưu vào Sổ tay & đồng bộ đám mây. Nhấn Enter để tiếp tục.</div>`;
-      addNoteToSidebar(rawItem, currentLesson.id);
-
-      const origIdx = currentLesson.items.indexOf(rawItem);
-      if (currentLesson.id !== 'mistakes-review' && origIdx !== -1) {
-        if (!Array.isArray(progressMap[currentLesson.id])) progressMap[currentLesson.id] = [];
-        if (!progressMap[currentLesson.id].includes(origIdx)) progressMap[currentLesson.id].push(origIdx);
-        localStorage.setItem('ee_progress', JSON.stringify(progressMap));
-      } else {
-        mistakesList = mistakesList.filter(m => m !== rawItem);
-        localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
-      }
-      syncProgressToCloud({ lastLessonTitle: currentLesson.title });
-    } else {
-      playTone('error'); streak = 0; justCheckedCorrect = false;
-      cardBox.classList.add('shake-err');
-      triggerRandomSticker('wrong', 0);
-      html += `<div style="margin-top:10px; color:#f87171; font-size:0.9rem;">⚠️ Chưa khớp hoàn toàn, nghe lại và sửa các từ màu đỏ/vàng nhé!</div>`;
-      if (!mistakesList.includes(rawItem)) {
-        mistakesList.push(rawItem);
-        localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
-        syncProgressToCloud();
-      }
-    }
-    localStorage.setItem('ee_streak', String(streak));
-    updateHeaderStats();
-    feedback.innerHTML = html;
-  }
-
-  function nextItem() {
-    if (currentIndex < activeItems.length - 1) { currentIndex++; loadCurrentItem(); }
-    else { launchConfetti(); alert('🎉 Xuất sắc! Bạn đã hoàn thành trọn vẹn 50 câu!'); goHome(); }
-  }
-
-  document.getElementById('userInput').addEventListener('input', () => {
-    if (document.getElementById('mechSoundToggle').checked) playTone('key');
-  });
-
-  document.addEventListener('keydown', (e) => {
+  
+   document.addEventListener('keydown', (e) => {
     if (document.getElementById('practiceView').classList.contains('hidden')) return;
     if (document.activeElement && document.activeElement.classList.contains('nb-note-input')) return;
-    if (e.ctrlKey && e.code === 'Space') { e.preventDefault(); speakCurrent(); }
-    else if (e.altKey && e.key.toLowerCase() === 'h') { e.preventDefault(); hintNextWord(); }
-    else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); justCheckedCorrect ? nextItem() : checkAnswer(); }
+    if (e.key === 'Tab' || ((e.ctrlKey || e.altKey) && e.code === 'Space')) {
+      e.preventDefault();
+      speakCurrent();
+    } else if (e.altKey && e.code === 'KeyH') {
+      e.preventDefault();
+      hintNextWord();
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      justCheckedCorrect ? nextItem() : checkAnswer();
+    }
   });
 
   function openCustomModal() { document.getElementById('customModal').style.display = 'flex'; }
