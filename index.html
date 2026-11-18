@@ -7,6 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Firebase SDK (Compat for single-file HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --bg-dark: #0b1120;
@@ -66,41 +70,58 @@
 
     header {
       position: sticky; top: 0; z-index: 50;
-      background: rgba(11, 17, 32, 0.88); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--card-border); padding: 12px 24px;
+      background: rgba(11, 17, 32, 0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border); padding: 11px 20px;
     }
-    .nav-container { max-width: 1240px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .logo { display: flex; align-items: center; gap: 10px; font-size: 1.22rem; font-weight: 800; cursor: pointer; color: #fff; }
+    .nav-container { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 1.18rem; font-weight: 800; cursor: pointer; color: #fff; }
     .badge-pro { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #0f172a; font-size: 0.7rem; padding: 2px 8px; border-radius: 6px; font-weight: 800; }
-    .header-stats { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .stat-pill { background: rgba(30, 41, 59, 0.85); border: 1px solid var(--card-border); padding: 5px 11px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .header-stats { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .stat-pill { background: rgba(30, 41, 59, 0.85); border: 1px solid var(--card-border); padding: 5px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
     .rank-pill { background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.45); color: #fde047; }
+
+    .user-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 4px 10px 4px 5px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+    }
+    .user-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
 
     .btn {
       background: rgba(30, 41, 59, 0.9); color: var(--text-main); border: 1px solid var(--card-border);
-      padding: 8px 13px; border-radius: 10px; font-size: 0.86rem; font-weight: 600; cursor: pointer;
+      padding: 7px 12px; border-radius: 10px; font-size: 0.84rem; font-weight: 600; cursor: pointer;
       transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
     }
     .btn:hover { background: rgba(51, 65, 85, 0.95); transform: translateY(-1px); }
     .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); border: none; color: #0f172a; font-weight: 700; }
+    .btn-admin { background: linear-gradient(135deg, #f59e0b, #ea580c); border: none; color: #fff; font-weight: 700; }
     .btn-warning { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.45); color: #fbbf24; }
     .btn-danger { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.45); color: #f87171; }
-    .btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 8px; }
+    .btn-sm { padding: 4px 9px; font-size: 0.76rem; border-radius: 8px; }
 
-    main { max-width: 1240px; margin: 0 auto; padding: 28px 20px 60px; }
-    .hero { text-align: center; margin-bottom: 26px; }
+    main { max-width: 1260px; margin: 0 auto; padding: 26px 20px 60px; }
+    .hero { text-align: center; margin-bottom: 24px; }
     .hero h1 {
-      font-size: 2.15rem; font-weight: 800;
+      font-size: 2.1rem; font-weight: 800;
       background: linear-gradient(to right, var(--primary), var(--accent), #f472b6);
       -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
     }
-    .hero p { color: var(--text-muted); font-size: 0.96rem; margin-bottom: 16px; }
-    .hero-actions, .filter-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+    .hero p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 14px; }
+    .sync-banner {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7; padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; margin-bottom: 14px;
+    }
+    .sync-banner.guest {
+      background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.35); color: #fcd34d;
+    }
+
+    .hero-actions, .filter-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
 
     .filter-btn {
       background: rgba(30, 41, 59, 0.75); border: 1px solid var(--card-border); color: var(--text-muted);
-      padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 0.86rem; cursor: pointer;
+      padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
     }
     .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #0f172a; border-color: var(--primary); }
 
@@ -126,7 +147,7 @@
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), var(--primary)); border-radius: 999px; }
     .progress-text { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
 
-    /* 2-Column Practice Layout */
+    /* Practice Layout */
     .practice-layout { display: grid; grid-template-columns: 1fr 380px; gap: 22px; align-items: start; }
     @media (max-width: 960px) { .practice-layout { grid-template-columns: 1fr; } }
 
@@ -182,7 +203,7 @@
     .shortcut-hint { margin-top: 16px; font-size: 0.78rem; color: var(--text-muted); text-align: center; }
     kbd { background: rgba(51, 65, 85, 0.8); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; color: #e2e8f0; }
 
-    /* Sổ tay từ vựng bên phải */
+    /* Notebook Sidebar */
     .notebook-panel {
       background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px;
       position: sticky; top: 76px; max-height: calc(100vh - 98px); display: flex; flex-direction: column;
@@ -199,8 +220,29 @@
     .nb-note-input { margin-top: 6px; width: 100%; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 6px; padding: 4px 8px; color: #fde047; font-size: 0.78rem; font-family: inherit; }
     .nb-empty { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 28px 12px; }
 
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.82); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
-    .modal-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 16px; max-width: 560px; width: 100%; padding: 24px; }
+    /* ADMIN DASHBOARD VIEW */
+    .admin-panel {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px;
+    }
+    .admin-stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 18px 0 22px;
+    }
+    .admin-stat-card {
+      background: rgba(15, 23, 42, 0.75); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px;
+    }
+    .admin-stat-card .num { font-size: 1.75rem; font-weight: 800; color: var(--primary); }
+    .admin-stat-card .lbl { font-size: 0.82rem; color: var(--text-muted); }
+
+    .admin-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--card-border); }
+    table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; }
+    table.admin-table th, table.admin-table td { padding: 12px 14px; border-bottom: 1px solid rgba(148, 163, 184, 0.14); }
+    table.admin-table th { background: rgba(15, 23, 42, 0.9); color: var(--text-muted); font-weight: 700; }
+    table.admin-table tr:hover td { background: rgba(30, 41, 59, 0.55); }
+    .online-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #10b981; margin-right: 6px; box-shadow: 0 0 8px #10b981; }
+    .offline-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #64748b; margin-right: 6px; }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.84); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+    .modal-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 16px; max-width: 620px; width: 100%; padding: 24px; max-height: 85vh; overflow-y: auto; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -224,17 +266,33 @@
       <div class="stat-pill">🔥 Chuỗi: <span id="streakCount">0</span></div>
       <div class="stat-pill">✅ Thuộc: <span id="masteredCount">0 câu</span></div>
       <div class="stat-pill">📓 Sổ tay: <span id="savedVocabCount">0</span></div>
-      <button class="btn" onclick="cycleRandomTheme()">🎨 Đổi nền (<span id="themeName">Đêm</span>)</button>
+      <button class="btn" onclick="cycleRandomTheme()">🎨 Nền (<span id="themeName">Đêm</span>)</button>
       <button class="btn btn-primary" onclick="openCustomModal()">+ Tự nhập bài</button>
+
+      <!-- Nút Admin (Chỉ hiện với tài khoản Admin hoặc khi chưa ai nhận Admin) -->
+      <button class="btn btn-warning hidden" id="claimAdminBtn" onclick="claimAdminRole()">👑 Kích hoạt Admin</button>
+      <button class="btn btn-admin hidden" id="openAdminBtn" onclick="openAdminDashboard()">👑 Quản trị học viên</button>
+
+      <!-- Khu vực Tài khoản Google -->
+      <button class="btn btn-primary" id="loginBtn" onclick="loginWithGoogle()">🔑 Đăng nhập Google</button>
+      <div class="user-chip hidden" id="userProfileChip">
+        <img id="userAvatarImg" src="" alt="avatar" />
+        <span id="userNameLabel">Học viên</span>
+        <button class="btn btn-sm btn-danger" onclick="logoutGoogle()" title="Đăng xuất">Thoát</button>
+      </div>
     </div>
   </div>
 </header>
 
 <main>
+  <!-- HOME VIEW -->
   <section id="homeView">
     <div class="hero">
       <h1>Luyện Nghe Chép Chính Tả Tiếng Anh</h1>
-      <p>Lộ trình 50 câu/bài từ từ vựng đơn lẻ đến phản xạ câu — Tích hợp Sổ tay từ vựng & Sticker phản hồi vui nhộn.</p>
+      <p>Lộ trình 50 câu/bài từ từ vựng đơn lẻ đến phản xạ câu — Đồng bộ tiến độ đám mây & Sổ tay từ vựng.</p>
+      <div id="syncStatusBanner" class="sync-banner guest">
+        ⚠️ Bạn đang học ở chế độ Khách (lưu trên máy này). Hãy bấm <strong>🔑 Đăng nhập Google</strong> ở góc phải để lưu tiến độ lên mây!
+      </div>
       <div class="hero-actions">
         <button class="btn btn-primary" onclick="startRandomLesson()">🎲 Học ngẫu nhiên 1 bài bất kỳ</button>
         <button class="btn" onclick="openBgModal()">🖼️ Cài ảnh nền riêng</button>
@@ -252,6 +310,7 @@
     <div id="lessonGrid" class="lesson-grid"></div>
   </section>
 
+  <!-- PRACTICE VIEW -->
   <section id="practiceView" class="hidden">
     <div class="practice-layout">
       <div class="practice-box" id="practiceCardBox">
@@ -332,8 +391,64 @@
       </aside>
     </div>
   </section>
+
+  <!-- ADMIN DASHBOARD VIEW -->
+  <section id="adminView" class="hidden">
+    <div class="admin-panel">
+      <div class="practice-top">
+        <button class="btn" onclick="goHome()">← Quay lại học bài</button>
+        <h2 style="color: #fbbf24;">👑 Bảng Quản Trị & Theo Dõi Học Viên (Realtime)</h2>
+        <input id="adminSearchInput" type="text" placeholder="🔍 Tìm tên hoặc email..." oninput="renderAdminTable()" style="padding:8px 12px; border-radius:10px; border:1px solid var(--card-border); background:#0f172a; color:#fff;" />
+      </div>
+
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="num" id="admTotalStudents">0</div>
+          <div class="lbl">Tổng số học viên đã đăng nhập</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="num" id="admOnlineNow" style="color:#34d399;">0</div>
+          <div class="lbl">Đang hoạt động (15 phút qua)</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="num" id="admTotalSentences" style="color:#fbbf24;">0</div>
+          <div class="lbl">Tổng số câu cả lớp đã thuộc</div>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Học viên</th>
+              <th>Hạng & Chuỗi</th>
+              <th>Tổng đã thuộc</th>
+              <th>Bài đang học</th>
+              <th>Hoạt động gần nhất</th>
+              <th>Lộ trình</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Đang tải dữ liệu học viên...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </main>
 
+<!-- STUDENT DETAIL MODAL (FOR ADMIN) -->
+<div id="studentDetailModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 id="sdStudentName">Chi tiết học viên</h3>
+      <button class="btn btn-sm" onclick="closeStudentDetailModal()">✕ Đóng</button>
+    </div>
+    <div id="sdContent" style="font-size:0.9rem;"></div>
+  </div>
+</div>
+
+<!-- CUSTOM LESSON MODAL -->
 <div id="customModal" class="modal-backdrop">
   <div class="modal-card">
     <h3 style="margin-bottom: 8px;">✍️ Tự tạo bài luyện nghe riêng</h3>
@@ -347,6 +462,7 @@
   </div>
 </div>
 
+<!-- BACKGROUND MODAL -->
 <div id="bgModal" class="modal-backdrop">
   <div class="modal-card">
     <h3 style="margin-bottom: 8px;">🖼️ Đổi hình nền cá nhân</h3>
@@ -361,6 +477,33 @@
 
 <script src="lessons.js"></script>
 <script>
+  // CẤU HÌNH FIREBASE CỦA DỰ ÁN englisheasy-8a894
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMeM5eWF2-6btGRYlANNW8tWkTrwY1h4M",
+    authDomain: "englisheasy-8a894.firebaseapp.com",
+    projectId: "englisheasy-8a894",
+    storageBucket: "englisheasy-8a894.firebasestorage.app",
+    messagingSenderId: "9758727454",
+    appId: "1:9758727454:web:ed70febd1702d926a1bd0f",
+    measurementId: "G-5T4L7LNKJY"
+  };
+
+  // Có thể điền trực tiếp email Admin của bạn vào đây hoặc bấm nút "Kích hoạt Admin" trên web
+  const HARDCODED_ADMIN_EMAIL = "";
+
+  let auth = null, db = null, currentUser = null;
+  let adminConfig = null;
+  let allStudentsCache = [];
+  let adminUnsubscribe = null;
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+  } catch (e) {
+    console.error("Firebase init error:", e);
+  }
+
   function safeGetJSON(key, fallback) {
     try {
       const val = localStorage.getItem(key);
@@ -483,7 +626,6 @@
       const key = str.split('|')[0].trim().toLowerCase();
       if (key && !seen.has(key)) { seen.add(key); list.push(str.trim()); }
     };
-
     if (Array.isArray(lesson.items)) lesson.items.forEach(add);
     const primary = LEVEL_POOLS[lesson.level] || LEVEL_POOLS.A1;
     const all = [...primary, ...LEVEL_POOLS.A1, ...LEVEL_POOLS.A2, ...LEVEL_POOLS.B1, ...LEVEL_POOLS.B2];
@@ -529,7 +671,257 @@
   let mistakesList = safeGetJSON('ee_mistakes', []);
   let savedNotebook = safeGetJSON('ee_notebook', []);
   let streak = parseInt(localStorage.getItem('ee_streak') || '0', 10) || 0;
+  let bestStreak = parseInt(localStorage.getItem('ee_best_streak') || String(streak), 10) || 0;
 
+  // --- FIREBASE AUTH & CLOUD SYNC ---
+  function loginWithGoogle() {
+    if (!auth) return alert('Chưa kết nối được Firebase.');
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => {
+      alert('Lỗi đăng nhập Google: ' + err.message);
+    });
+  }
+
+  function logoutGoogle() {
+    if (auth) auth.signOut();
+  }
+
+  async function syncProgressToCloud(extraFields = {}) {
+    if (!db || !currentUser) return;
+    let totalMastered = 0;
+    Object.values(progressMap).forEach(arr => { if (Array.isArray(arr)) totalMastered += arr.length; });
+
+    try {
+      await db.collection('users').doc(currentUser.uid).set({
+        uid: currentUser.uid,
+        name: currentUser.displayName || currentUser.email.split('@')[0],
+        email: currentUser.email,
+        photoURL: currentUser.photoURL || '',
+        totalMastered,
+        streak,
+        bestStreak,
+        progressMap,
+        mistakesList: mistakesList.slice(0, 80),
+        savedNotebook: savedNotebook.slice(0, 200),
+        lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+        ...extraFields
+      }, { merge: true });
+    } catch (e) {
+      console.error('Cloud sync error:', e);
+    }
+  }
+
+  async function checkAdminStatus(user) {
+    const claimBtn = document.getElementById('claimAdminBtn');
+    const openBtn = document.getElementById('openAdminBtn');
+    claimBtn.classList.add('hidden');
+    openBtn.classList.add('hidden');
+
+    if (!db || !user) return;
+    if (HARDCODED_ADMIN_EMAIL && user.email.toLowerCase() === HARDCODED_ADMIN_EMAIL.toLowerCase()) {
+      openBtn.classList.remove('hidden');
+      return;
+    }
+    try {
+      const doc = await db.collection('config').doc('admin').get();
+      if (!doc.exists) {
+        // Chưa có ai nhận quyền Admin -> Hiển thị nút Kích hoạt Admin cho bạn bấm 1 lần
+        claimBtn.classList.remove('hidden');
+      } else {
+        adminConfig = doc.data();
+        if (adminConfig.adminUid === user.uid || adminConfig.adminEmail === user.email) {
+          openBtn.classList.remove('hidden');
+        }
+      }
+    } catch (e) {
+      console.error('Admin check error:', e);
+    }
+  }
+
+  async function claimAdminRole() {
+    if (!db || !currentUser) return;
+    if (!confirm(`Xác nhận đặt tài khoản "${currentUser.email}" làm Quản trị viên (Admin) duy nhất của trang web?`)) return;
+    try {
+      await db.collection('config').doc('admin').set({
+        adminUid: currentUser.uid,
+        adminEmail: currentUser.email,
+        claimedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert('👑 Kích hoạt quyền Admin thành công! Bây giờ chỉ tài khoản của bạn mới xem được bảng theo dõi học viên.');
+      checkAdminStatus(currentUser);
+    } catch (e) {
+      alert('Không thể kích hoạt Admin: ' + e.message);
+    }
+  }
+
+  if (auth) {
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      const loginBtn = document.getElementById('loginBtn');
+      const chip = document.getElementById('userProfileChip');
+      const banner = document.getElementById('syncStatusBanner');
+
+      if (user) {
+        loginBtn.classList.add('hidden');
+        chip.classList.remove('hidden');
+        document.getElementById('userNameLabel').textContent = user.displayName || user.email.split('@')[0];
+        document.getElementById('userAvatarImg').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+
+        banner.className = 'sync-banner';
+        banner.innerHTML = `☁️ Đã kết nối đám mây: <strong>${user.displayName || user.email}</strong> — Tiến độ học của bạn được tự động lưu trữ an toàn.`;
+
+        // Tải dữ liệu cũ trên Cloud về gộp với máy hiện tại
+        try {
+          const snap = await db.collection('users').doc(user.uid).get();
+          if (snap.exists) {
+            const data = snap.data();
+            if (data.progressMap) {
+              Object.keys(data.progressMap).forEach(lid => {
+                const merged = new Set([...(progressMap[lid] || []), ...(data.progressMap[lid] || [])]);
+                progressMap[lid] = Array.from(merged);
+              });
+              localStorage.setItem('ee_progress', JSON.stringify(progressMap));
+            }
+            if (Array.isArray(data.savedNotebook) && data.savedNotebook.length > savedNotebook.length) {
+              savedNotebook = data.savedNotebook;
+              localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook));
+            }
+            if (data.bestStreak && data.bestStreak > bestStreak) {
+              bestStreak = data.bestStreak;
+              localStorage.setItem('ee_best_streak', String(bestStreak));
+            }
+          }
+        } catch (e) {}
+
+        await syncProgressToCloud();
+        await checkAdminStatus(user);
+        renderLessons();
+        updateHeaderStats();
+      } else {
+        loginBtn.classList.remove('hidden');
+        chip.classList.add('hidden');
+        document.getElementById('claimAdminBtn').classList.add('hidden');
+        document.getElementById('openAdminBtn').classList.add('hidden');
+        banner.className = 'sync-banner guest';
+        banner.innerHTML = `⚠️ Bạn đang học ở chế độ Khách (lưu trên máy này). Hãy bấm <strong>🔑 Đăng nhập Google</strong> ở góc phải để lưu tiến độ lên mây!`;
+      }
+    });
+  }
+
+  // --- ADMIN DASHBOARD ---
+  function openAdminDashboard() {
+    document.getElementById('homeView').classList.add('hidden');
+    document.getElementById('practiceView').classList.add('hidden');
+    document.getElementById('adminView').classList.remove('hidden');
+
+    if (adminUnsubscribe) adminUnsubscribe();
+    adminUnsubscribe = db.collection('users').orderBy('totalMastered', 'desc').onSnapshot(snapshot => {
+      allStudentsCache = [];
+      snapshot.forEach(doc => allStudentsCache.push(doc.data()));
+      renderAdminTable();
+    }, err => {
+      document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="6" style="color:#f87171;">Lỗi tải dữ liệu: ${err.message}</td></tr>`;
+    });
+  }
+
+  function formatTimeAgo(ts) {
+    if (!ts || !ts.toDate) return { text: 'Mới tham gia', isOnline: true };
+    const date = ts.toDate();
+    const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+    if (diffMin < 15) return { text: diffMin <= 1 ? 'Vừa xong' : `${diffMin} phút trước`, isOnline: true };
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mi = String(date.getMinutes()).padStart(2, '0');
+    return { text: `${dd}/${mm} lúc ${hh}:${mi}`, isOnline: false };
+  }
+
+  function renderAdminTable() {
+    const q = (document.getElementById('adminSearchInput').value || '').toLowerCase();
+    const filtered = allStudentsCache.filter(s =>
+      (s.name || '').toLowerCase().includes(q) || (s.email || '').toLowerCase().includes(q)
+    );
+
+    let onlineCount = 0, totalClassSentences = 0;
+    allStudentsCache.forEach(s => {
+      totalClassSentences += (s.totalMastered || 0);
+      if (formatTimeAgo(s.lastActive).isOnline) onlineCount++;
+    });
+
+    document.getElementById('admTotalStudents').textContent = allStudentsCache.length;
+    document.getElementById('admOnlineNow').textContent = onlineCount;
+    document.getElementById('admTotalSentences').textContent = `${totalClassSentences} câu`;
+
+    const tbody = document.getElementById('adminTableBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Chưa có học viên nào khớp tìm kiếm.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = '';
+    filtered.forEach((st, idx) => {
+      const timeInfo = formatTimeAgo(st.lastActive);
+      const total = st.totalMastered || 0;
+      const rank = total >= 500 ? "👑 Huyền thoại" : total >= 250 ? "🔥 Cao thủ" : total >= 100 ? "⚡ Phản xạ Bạc" : total >= 30 ? "🎧 Thợ săn từ" : "🌱 Tân binh";
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div style="display:flex; align-items:center; gap:9px;">
+            <img src="${st.photoURL || 'https://www.gravatar.com/avatar/?d=mp'}" style="width:32px; height:32px; border-radius:50%;" />
+            <div>
+              <div style="font-weight:700; color:#f8fafc;">#${idx + 1} ${st.name || 'Học viên'}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">${st.email || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div>${rank}</div>
+          <div style="font-size:0.78rem; color:#fbbf24;">🔥 Kỷ lục chuỗi: ${st.bestStreak || st.streak || 0}</div>
+        </td>
+        <td style="font-weight:800; color:#34d399; font-size:1rem;">${total} câu</td>
+        <td style="color:var(--primary); font-size:0.84rem;">${st.lastLessonTitle || 'Chưa vào bài'}</td>
+        <td><span class="${timeInfo.isOnline ? 'online-dot' : 'offline-dot'}"></span>${timeInfo.text}</td>
+        <td><button class="btn btn-sm btn-primary" onclick='showStudentDetail(${JSON.stringify(st.uid)})'>🔍 Chi tiết</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function showStudentDetail(uid) {
+    const st = allStudentsCache.find(s => s.uid === uid);
+    if (!st) return;
+    document.getElementById('sdStudentName').textContent = `📊 Lộ trình của: ${st.name} (${st.email})`;
+
+    const pMap = st.progressMap || {};
+    let lessonRows = '';
+    ALL_LESSONS.forEach(l => {
+      const done = Array.isArray(pMap[l.id]) ? pMap[l.id].length : 0;
+      if (done > 0) {
+        lessonRows += `<div style="display:flex; justify-content:space-between; padding:6px 10px; background:rgba(30,41,59,0.7); border-radius:8px; margin-bottom:6px;">
+          <span>${l.title}</span>
+          <strong style="color:#34d399;">${done} / ${l.items.length} câu</strong>
+        </div>`;
+      }
+    });
+    if (!lessonRows) lessonRows = '<p style="color:var(--text-muted);">Học viên chưa hoàn thành câu nào.</p>';
+
+    const mistakes = Array.isArray(st.mistakesList) ? st.mistakesList : [];
+    const mistakeHtml = mistakes.length
+      ? mistakes.slice(0, 15).map(m => `<span style="display:inline-block; background:rgba(239,68,68,0.2); color:#fca5a5; padding:3px 8px; border-radius:6px; margin:3px; font-size:0.82rem;">${m.split('|')[0].trim()}</span>`).join('')
+      : '<span style="color:var(--text-muted);">Chưa ghi nhận lỗi sai nào.</span>';
+
+    document.getElementById('sdContent').innerHTML = `
+      <h4 style="color:var(--primary); margin-bottom:8px;">📚 Tiến độ từng bài học:</h4>
+      ${lessonRows}
+      <h4 style="color:#fbbf24; margin:14px 0 8px;">⚠️ Các từ / câu học viên từng gõ sai (${mistakes.length}):</h4>
+      <div>${mistakeHtml}</div>
+    `;
+    document.getElementById('studentDetailModal').style.display = 'flex';
+  }
+  function closeStudentDetailModal() { document.getElementById('studentDetailModal').style.display = 'none'; }
+
+  // --- AUDIO & STICKERS ---
   let audioCtx = null;
   function playTone(type) {
     try {
@@ -537,8 +929,7 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      osc.connect(gain); gain.connect(audioCtx.destination);
       if (type === 'key') {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(340 + Math.random() * 80, audioCtx.currentTime);
@@ -688,8 +1079,10 @@
       for (let i = 0; i < activeItems.length; i++) { if (!doneArr.includes(i)) { currentIndex = i; break; } }
     }
     document.getElementById('homeView').classList.add('hidden');
+    document.getElementById('adminView').classList.add('hidden');
     document.getElementById('practiceView').classList.remove('hidden');
     document.getElementById('lessonTitleHeader').textContent = lesson.title;
+    syncProgressToCloud({ lastLessonTitle: lesson.title });
     loadCurrentItem();
     renderNotebookSidebar();
   }
@@ -704,7 +1097,9 @@
 
   function goHome() {
     if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (adminUnsubscribe) { adminUnsubscribe(); adminUnsubscribe = null; }
     document.getElementById('practiceView').classList.add('hidden');
+    document.getElementById('adminView').classList.add('hidden');
     document.getElementById('homeView').classList.remove('hidden');
     ALL_LESSONS = buildAllLessons();
     renderLessons();
@@ -792,7 +1187,11 @@
     updateHeaderStats();
   }
 
-  function manualNoteCurrent() { if (currentLesson) addNoteToSidebar(activeItems[currentIndex], currentLesson.id); }
+  function manualNoteCurrent() {
+    if (!currentLesson) return;
+    addNoteToSidebar(activeItems[currentIndex], currentLesson.id);
+    syncProgressToCloud();
+  }
 
   function switchNotebookTab(tab) {
     activeNotebookTab = tab;
@@ -821,7 +1220,7 @@
       top.append(en, btn);
       const vi = document.createElement('div'); vi.className = 'nb-vi'; vi.textContent = `👉 ${item.vi}`;
       const inp = document.createElement('input'); inp.className = 'nb-note-input'; inp.placeholder = '✏️ Ghi chú thêm...'; inp.value = item.note || '';
-      inp.onchange = (e) => { item.note = e.target.value; localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook)); };
+      inp.onchange = (e) => { item.note = e.target.value; localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook)); syncProgressToCloud(); };
       div.append(top, vi, inp);
       listEl.appendChild(div);
     });
@@ -855,10 +1254,13 @@
     void cardBox.offsetWidth;
 
     if (allCorrect) {
-      playTone('success'); streak++; justCheckedCorrect = true;
+      playTone('success');
+      streak++;
+      if (streak > bestStreak) { bestStreak = streak; localStorage.setItem('ee_best_streak', String(bestStreak)); }
+      justCheckedCorrect = true;
       cardBox.classList.add('glow-ok');
       triggerRandomSticker('correct', streak);
-      html += `<div style="margin-top:10px; color:#34d399; font-weight:700;">🎉 Chính xác 100%! Đã lưu vào Sổ tay bên phải. Nhấn Enter để tiếp tục.</div>`;
+      html += `<div style="margin-top:10px; color:#34d399; font-weight:700;">🎉 Chính xác 100%! Đã lưu vào Sổ tay & đồng bộ đám mây. Nhấn Enter để tiếp tục.</div>`;
       addNoteToSidebar(rawItem, currentLesson.id);
 
       const origIdx = currentLesson.items.indexOf(rawItem);
@@ -870,12 +1272,17 @@
         mistakesList = mistakesList.filter(m => m !== rawItem);
         localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
       }
+      syncProgressToCloud({ lastLessonTitle: currentLesson.title });
     } else {
       playTone('error'); streak = 0; justCheckedCorrect = false;
       cardBox.classList.add('shake-err');
       triggerRandomSticker('wrong', 0);
       html += `<div style="margin-top:10px; color:#f87171; font-size:0.9rem;">⚠️ Chưa khớp hoàn toàn, nghe lại và sửa các từ màu đỏ/vàng nhé!</div>`;
-      if (!mistakesList.includes(rawItem)) { mistakesList.push(rawItem); localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList)); }
+      if (!mistakesList.includes(rawItem)) {
+        mistakesList.push(rawItem);
+        localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
+        syncProgressToCloud();
+      }
     }
     localStorage.setItem('ee_streak', String(streak));
     updateHeaderStats();
