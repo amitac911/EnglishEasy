@@ -10,8 +10,8 @@
   <style>
     :root {
       --bg-dark: #0b1120;
-      --card-bg: rgba(15, 23, 42, 0.84);
-      --card-border: rgba(148, 163, 184, 0.16);
+      --card-bg: rgba(15, 23, 42, 0.86);
+      --card-border: rgba(148, 163, 184, 0.18);
       --primary: #38bdf8;
       --primary-hover: #0ea5e9;
       --accent: #818cf8;
@@ -36,19 +36,18 @@
       line-height: 1.6;
     }
 
-    /* Header */
     header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(11, 17, 32, 0.85);
+      background: rgba(11, 17, 32, 0.88);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
       padding: 14px 24px;
     }
 
     .nav-container {
-      max-width: 1140px;
+      max-width: 1220px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -84,7 +83,7 @@
     }
 
     .stat-pill {
-      background: rgba(30, 41, 59, 0.8);
+      background: rgba(30, 41, 59, 0.85);
       border: 1px solid var(--card-border);
       padding: 6px 12px;
       border-radius: 999px;
@@ -111,15 +110,14 @@
       font-family: inherit;
     }
 
-    .btn:hover { background: rgba(51, 65, 85, 0.95); border-color: rgba(148, 163, 184, 0.35); }
+    .btn:hover { background: rgba(51, 65, 85, 0.95); border-color: rgba(148, 163, 184, 0.38); }
     .btn-primary { background: linear-gradient(135deg, #0284c7, #4f46e5); border: none; color: #fff; }
     .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
-    .btn-success { background: var(--success); border: none; color: #fff; }
     .btn-warning { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.45); color: #fbbf24; }
     .btn-danger { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.45); color: #f87171; }
+    .btn-sm { padding: 5px 10px; font-size: 0.78rem; border-radius: 8px; }
 
-    /* Main Container */
-    main { max-width: 1140px; margin: 0 auto; padding: 32px 20px 60px; }
+    main { max-width: 1220px; margin: 0 auto; padding: 32px 20px 60px; }
 
     .hero { text-align: center; margin-bottom: 32px; }
     .hero h1 {
@@ -133,7 +131,6 @@
     }
     .hero p { color: var(--text-muted); font-size: 1rem; }
 
-    /* Filters */
     .filter-bar {
       display: flex;
       justify-content: center;
@@ -160,10 +157,9 @@
       border-color: var(--primary);
     }
 
-    /* Lesson Grid */
     .lesson-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 20px;
     }
 
@@ -231,14 +227,25 @@
       font-weight: 500;
     }
 
-    /* Practice View */
+    /* 2-Column Practice Layout (Main + Right Vocab Notebook) */
+    .practice-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .practice-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .practice-box {
-      max-width: 780px;
-      margin: 0 auto;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 28px;
+      padding: 26px;
       backdrop-filter: blur(12px);
     }
 
@@ -246,9 +253,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
       gap: 10px;
+    }
+
+    .type-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
     }
 
     .audio-controls {
@@ -256,7 +273,7 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 18px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -329,7 +346,7 @@
       padding: 6px 10px;
       border-radius: 8px;
       font-size: 0.84rem;
-      max-width: 240px;
+      max-width: 230px;
     }
 
     .meaning-box {
@@ -366,7 +383,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .feedback-area {
@@ -413,6 +430,124 @@
       color: #e2e8f0;
     }
 
+    /* RIGHT SIDEBAR: SỔ TAY TỪ VỰNG */
+    .notebook-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 82px;
+      max-height: calc(100vh - 105px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notebook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .notebook-header h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notebook-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .nb-tab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      background: rgba(30, 41, 59, 0.7);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+    }
+    .nb-tab.active {
+      background: rgba(56, 189, 248, 0.16);
+      color: var(--primary);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .notebook-list {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .notebook-item {
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-left: 3px solid var(--success);
+      border-radius: 10px;
+      padding: 10px 12px;
+      animation: slideIn 0.25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .nb-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .nb-en {
+      font-weight: 700;
+      color: #38bdf8;
+      font-size: 0.94rem;
+      word-break: break-word;
+    }
+
+    .nb-vi {
+      font-size: 0.83rem;
+      color: #cbd5e1;
+    }
+
+    .nb-note-input {
+      margin-top: 6px;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: #fde047;
+      font-size: 0.78rem;
+      font-family: inherit;
+    }
+
+    .nb-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 28px 12px;
+    }
+
     /* Modal */
     .modal-backdrop {
       position: fixed;
@@ -444,8 +579,9 @@
       <span class="badge-pro">PRO</span>
     </div>
     <div class="header-stats">
-      <div class="stat-pill" title="Chuỗi câu trả lời đúng liên tiếp">🔥 Chuỗi đúng: <span id="streakCount">0</span></div>
-      <div class="stat-pill" title="Tổng số câu/từ đã hoàn thành">✅ Đã thuộc: <span id="masteredCount">0</span></div>
+      <div class="stat-pill">🔥 Chuỗi đúng: <span id="streakCount">0</span></div>
+      <div class="stat-pill">✅ Đã thuộc: <span id="masteredCount">0</span></div>
+      <div class="stat-pill">📓 Sổ tay: <span id="savedVocabCount">0</span> mục</div>
       <button class="btn btn-primary" onclick="openCustomModal()">+ Tự nhập bài</button>
     </div>
   </div>
@@ -456,7 +592,7 @@
   <section id="homeView">
     <div class="hero">
       <h1>Luyện Nghe Chép Chính Tả Tiếng Anh</h1>
-      <p>Hệ thống bài nghe đi từ từ vựng cốt lõi đến ghép câu hoàn chỉnh — Chấm điểm từng từ & phản hồi tức thì.</p>
+      <p>Lộ trình 50 câu/bài từ từ vựng đơn lẻ đến phản xạ câu — Tự động lưu sổ tay từ vựng ngay khi làm bài.</p>
     </div>
 
     <div class="filter-bar">
@@ -470,63 +606,85 @@
     <div id="lessonGrid" class="lesson-grid"></div>
   </section>
 
-  <!-- PRACTICE VIEW -->
+  <!-- PRACTICE VIEW (2 COLUMNS: LEFT PRACTICE + RIGHT NOTEBOOK) -->
   <section id="practiceView" class="hidden">
-    <div class="practice-box">
-      <div class="practice-top">
-        <button class="btn" onclick="goHome()">← Quay lại danh sách</button>
-        <div style="font-weight: 700; color: var(--primary);" id="lessonTitleHeader">Bài 1</div>
-        <div style="font-size: 0.88rem; color: var(--text-muted);" id="itemCounter">Câu 1 / 10</div>
-      </div>
-
-      <div class="audio-controls">
-        <div class="audio-main-row">
-          <button class="play-btn-big" onclick="speakCurrent()">🔊 Nghe phát âm</button>
-          <div class="speed-group">
-            <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Tốc độ:</span>
-            <button class="speed-btn" data-rate="0.5" onclick="setSpeed(0.5, this)">0.5x</button>
-            <button class="speed-btn" data-rate="0.65" onclick="setSpeed(0.65, this)">0.65x</button>
-            <button class="speed-btn" data-rate="0.75" onclick="setSpeed(0.75, this)">0.75x</button>
-            <button class="speed-btn active" data-rate="1.0" onclick="setSpeed(1.0, this)">1.0x</button>
-            <button class="speed-btn" data-rate="1.2" onclick="setSpeed(1.2, this)">1.2x</button>
+    <div class="practice-layout">
+      <!-- CỘT TRÁI: KHUNG LUYỆN NGHE -->
+      <div class="practice-box">
+        <div class="practice-top">
+          <button class="btn" onclick="goHome()">← Danh sách bài</button>
+          <div style="font-weight: 700; color: var(--primary);" id="lessonTitleHeader">Bài 1</div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="type-badge" id="itemTypeBadge">🔤 Từ vựng</span>
+            <span style="font-size: 0.88rem; color: var(--text-muted); font-weight:600;" id="itemCounter">Câu 1 / 50</span>
           </div>
         </div>
 
-        <div class="settings-row">
-          <div>
-            <label for="voiceSelect">Giọng đọc: </label>
-            <select id="voiceSelect" class="voice-select" onchange="speakCurrent()"></select>
+        <div class="audio-controls">
+          <div class="audio-main-row">
+            <button class="play-btn-big" onclick="speakCurrent()">🔊 Nghe phát âm</button>
+            <div class="speed-group">
+              <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Tốc độ:</span>
+              <button class="speed-btn" onclick="setSpeed(0.5, this)">0.5x</button>
+              <button class="speed-btn" onclick="setSpeed(0.65, this)">0.65x</button>
+              <button class="speed-btn" onclick="setSpeed(0.75, this)">0.75x</button>
+              <button class="speed-btn active" onclick="setSpeed(1.0, this)">1.0x</button>
+              <button class="speed-btn" onclick="setSpeed(1.2, this)">1.2x</button>
+            </div>
           </div>
-          <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #e2e8f0;">
-            <input type="checkbox" id="hideMeaningToggle" onchange="toggleMeaningVisibility()" />
-            Chế độ thử thách (Ẩn nghĩa tiếng Việt)
-          </label>
+
+          <div class="settings-row">
+            <div>
+              <label for="voiceSelect">Giọng đọc: </label>
+              <select id="voiceSelect" class="voice-select" onchange="speakCurrent()"></select>
+            </div>
+            <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: #e2e8f0;">
+              <input type="checkbox" id="hideMeaningToggle" onchange="toggleMeaningVisibility()" />
+              Ẩn nghĩa tiếng Việt
+            </label>
+          </div>
+        </div>
+
+        <div class="meaning-box" id="meaningBox">
+          <span>💡 Nghĩa tiếng Việt: <strong id="viMeaningText">...</strong></span>
+          <button class="btn btn-sm" onclick="manualNoteCurrent()" title="Lưu ngay từ/câu này vào sổ tay bên phải">📌 Lưu sổ tay</button>
+        </div>
+
+        <textarea id="userInput" class="dictation-input" rows="2" placeholder="Nghe và gõ lại chính xác từ hoặc câu bạn nghe được..."></textarea>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="checkAnswer()">✓ Kiểm tra (Enter)</button>
+          <button class="btn btn-warning" onclick="hintNextWord()">💡 Gợi ý 1 từ</button>
+          <button class="btn" id="toggleAnswerBtn" onclick="toggleAnswerReveal()">👁️ Hiện đáp án</button>
+          <button class="btn" onclick="nextItem()">Câu tiếp theo →</button>
+        </div>
+
+        <div id="answerRevealBox" class="answer-reveal-box">
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Đáp án chuẩn (bấm "Ẩn đáp án" để đóng):</div>
+          <div id="answerRevealText" style="font-size: 1.12rem; font-weight: 700; color: #38bdf8;"></div>
+        </div>
+
+        <div id="feedbackArea" class="feedback-area"></div>
+
+        <div class="shortcut-hint">
+          Phím tắt: <kbd>Ctrl</kbd> + <kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Alt</kbd> + <kbd>H</kbd> Gợi ý từ
         </div>
       </div>
 
-      <div class="meaning-box" id="meaningBox">
-        <span>💡 Nghĩa tiếng Việt: <strong id="viMeaningText">...</strong></span>
-      </div>
+      <!-- CỘT PHẢI: SỔ TAY TỪ VỰNG TỰ ĐỘNG GHI CHÚ -->
+      <aside class="notebook-panel">
+        <div class="notebook-header">
+          <h3>📓 Sổ Tay Từ Vựng</h3>
+          <button class="btn btn-sm" onclick="copyNotebook()" title="Copy toàn bộ sổ tay để gửi Zalo/Word">📋 Copy bài</button>
+        </div>
 
-      <textarea id="userInput" class="dictation-input" rows="2" placeholder="Nghe và gõ lại chính xác những gì bạn nghe được..."></textarea>
+        <div class="notebook-tabs">
+          <div class="nb-tab active" id="tabCurrentLesson" onclick="switchNotebookTab('current')">Bài đang học (<span id="nbCurrentCount">0</span>)</div>
+          <div class="nb-tab" id="tabAllSaved" onclick="switchNotebookTab('all')">Tất cả đã lưu (<span id="nbAllCount">0</span>)</div>
+        </div>
 
-      <div class="action-row">
-        <button class="btn btn-primary" onclick="checkAnswer()">✓ Kiểm tra (Enter)</button>
-        <button class="btn btn-warning" onclick="hintNextWord()">💡 Gợi ý 1 từ</button>
-        <button class="btn" id="toggleAnswerBtn" onclick="toggleAnswerReveal()">👁️ Hiện đáp án</button>
-        <button class="btn" onclick="nextItem()">Câu tiếp theo →</button>
-      </div>
-
-      <div id="answerRevealBox" class="answer-reveal-box">
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Đáp án chuẩn (bấm nút Ẩn đáp án để đóng lại):</div>
-        <div id="answerRevealText" style="font-size: 1.12rem; font-weight: 700; color: #38bdf8;"></div>
-      </div>
-
-      <div id="feedbackArea" class="feedback-area"></div>
-
-      <div class="shortcut-hint">
-        Phím tắt nhanh: <kbd>Ctrl</kbd> + <kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Câu tiếp &nbsp;|&nbsp; <kbd>Alt</kbd> + <kbd>H</kbd> Gợi ý từ
-      </div>
+        <div id="notebookList" class="notebook-list"></div>
+      </aside>
     </div>
   </section>
 </main>
@@ -536,10 +694,10 @@
   <div class="modal-card">
     <h3 style="margin-bottom: 8px;">✍️ Tự tạo bài luyện nghe riêng</h3>
     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
-      Nhập mỗi dòng theo cú pháp: <code>Câu tiếng Anh | Nghĩa tiếng Việt</code>
+      Nhập mỗi dòng theo cú pháp: <code>Từ hoặc câu tiếng Anh | Nghĩa tiếng Việt</code>
     </p>
-    <input id="customTitle" type="text" placeholder="Tên bài học (VD: Luyện nghe phỏng vấn)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--card-border); background:#1e293b; color:#fff; margin-bottom:10px;" />
-    <textarea id="customContent" rows="6" placeholder="Hello, nice to meet you. | Xin chào, rất vui được gặp bạn.&#10;I am ready for the interview. | Tôi đã sẵn sàng cho buổi phỏng vấn." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--card-border); background:#1e293b; color:#fff; margin-bottom:14px;"></textarea>
+    <input id="customTitle" type="text" placeholder="Tên bài học (VD: Từ vựng Dược liệu B2B)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--card-border); background:#1e293b; color:#fff; margin-bottom:10px;" />
+    <textarea id="customContent" rows="6" placeholder="botanical extract | chiết xuất thảo dược&#10;We provide high quality herbal extracts. | Chúng tôi cung cấp chiết xuất thảo dược chất lượng cao." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--card-border); background:#1e293b; color:#fff; margin-bottom:14px;"></textarea>
     <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button class="btn" onclick="closeCustomModal()">Hủy</button>
       <button class="btn btn-primary" onclick="saveCustomLesson()">Lưu & Học ngay</button>
@@ -549,45 +707,145 @@
 
 <script src="lessons.js"></script>
 <script>
-  // Dữ liệu mặc định nếu chưa có lessons.js
+  // Kho dữ liệu mở rộng theo từng cấp độ để đảm bảo mỗi bài học luôn đạt chuẩn 50 câu (Từ vựng đơn -> Cụm từ -> Câu ghép)
+  const LEVEL_EXPANSION_POOLS = {
+    A1: [
+      "morning | buổi sáng", "afternoon | buổi chiều", "evening | buổi tối", "tonight | tối nay",
+      "tomorrow | ngày mai", "yesterday | hôm qua", "weekend | cuối tuần", "together | cùng nhau",
+      "always | luôn luôn", "usually | thường xuyên", "sometimes | thỉnh thoảng", "never | không bao giờ",
+      "early | sớm", "late | muộn", "ready | sẵn sàng", "busy | bận rộn",
+      "hungry | đói bụng", "thirsty | khát nước", "tired | mệt mỏi", "happy | vui vẻ",
+      "weather | thời tiết", "breakfast | bữa sáng", "lunch | bữa trưa", "dinner | bữa tối",
+      "favorite | yêu thích", "important | quan trọng", "different | khác biệt", "easy | dễ dàng",
+      "difficult | khó khăn", "neighbor | hàng xóm", "company | công ty", "hospital | bệnh viện",
+      "supermarket | siêu thị", "restaurant | nhà hàng", "airport | sân bay",
+      "Good morning, how are you doing today? | Chào buổi sáng, hôm nay bạn thế nào?",
+      "I usually wake up at six o'clock every morning. | Tôi thường thức dậy lúc 6 giờ mỗi sáng.",
+      "She does not drink coffee in the evening. | Cô ấy không uống cà phê vào buổi tối.",
+      "Do you have enough time to help me today? | Hôm nay bạn có đủ thời gian giúp tôi không?",
+      "We are going to the supermarket after work. | Chúng tôi sẽ đi siêu thị sau giờ làm việc.",
+      "He is very busy with his new project right now. | Hiện tại anh ấy đang rất bận với dự án mới.",
+      "Are they waiting for us at the main gate? | Họ có đang đợi chúng ta ở cổng chính không?",
+      "My younger brother studies English every weekend. | Em trai tôi học tiếng Anh vào mỗi cuối tuần.",
+      "I do not know how to get to the train station. | Tôi không biết đường đi đến nhà ga.",
+      "What time do you usually have dinner with your family? | Bạn thường ăn tối cùng gia đình lúc mấy giờ?"
+    ],
+    A2: [
+      "appointment | cuộc hẹn", "schedule | lịch trình", "reservation | đặt chỗ trước", "luggage | hành lý",
+      "passport | hộ chiếu", "boarding pass | thẻ lên máy bay", "departure | khởi hành", "arrival | điểm đến",
+      "receptionist | lễ tân", "customer | khách hàng", "experience | kinh nghiệm", "direction | phương hướng",
+      "traffic | giao thông", "convenient | thuận tiện", "comfortable | thoải mái", "expensive | đắt đỏ",
+      "reasonable | hợp lý", "available | có sẵn", "recommend | giới thiệu, đề xuất", "confirm | xác nhận",
+      "cancel | hủy bỏ", "delay | trì hoãn", "immediately | ngay lập tức", "recently | gần đây",
+      "actually | thực ra là", "especially | đặc biệt là", "foreigner | người nước ngoài", "tradition | truyền thống",
+      "medicine | thuốc", "pharmacy | hiệu thuốc", "symptom | triệu chứng", "healthy | khỏe mạnh",
+      "Could you please confirm my hotel reservation? | Bạn vui lòng xác nhận giúp đặt phòng khách sạn của tôi được không?",
+      "I would like to book a table for four people tonight. | Tôi muốn đặt một bàn cho bốn người vào tối nay.",
+      "The flight was delayed for two hours due to bad weather. | Chuyến bay đã bị hoãn hai tiếng vì thời tiết xấu.",
+      "How long does it take to get to the airport by taxi? | Đi taxi đến sân bay mất bao lâu?",
+      "She has lived in Hanoi for more than five years. | Cô ấy đã sống ở Hà Nội hơn năm năm rồi.",
+      "We did not expect the traffic to be so heavy this morning. | Chúng tôi không ngờ sáng nay giao thông lại đông đúc đến vậy.",
+      "Can you recommend a good local restaurant near here? | Bạn có thể gợi ý một nhà hàng địa phương ngon gần đây không?",
+      "Please let me know if you need any further information. | Vui lòng cho tôi biết nếu bạn cần thêm bất kỳ thông tin nào."
+    ],
+    B1: [
+      "deadline | hạn chót", "requirement | yêu cầu", "quotation | bảng báo giá", "invoice | hóa đơn",
+      "supplier | nhà cung cấp", "manufacturer | nhà sản xuất", "ingredient | thành phần, nguyên liệu", "quality | chất lượng",
+      "delivery | giao hàng", "warehouse | kho hàng", "inventory | hàng tồn kho", "contract | hợp đồng",
+      "negotiate | đàm phán", "collaborate | hợp tác", "responsibility | trách nhiệm", "opportunity | cơ hội",
+      "improvement | sự cải tiến", "solution | giải pháp", "efficient | hiệu quả", "professional | chuyên nghiệp",
+      "confident | tự tin", "feedback | phản hồi", "presentation | bài thuyết trình", "department | phòng ban",
+      "production | sự sản xuất", "shipment | lô hàng gửi đi", "specification | thông số kỹ thuật", "sample | mẫu thử",
+      "We will send you the official quotation and sample tomorrow morning. | Chúng tôi sẽ gửi bảng báo giá chính thức và mẫu thử cho bạn vào sáng mai.",
+      "The production team is working hard to meet the delivery deadline. | Đội ngũ sản xuất đang làm việc chăm chỉ để kịp tiến độ giao hàng.",
+      "Could you please check the inventory before confirming the order? | Bạn vui lòng kiểm tra tồn kho trước khi xác nhận đơn hàng nhé?",
+      "We apologize for the slight delay in issuing your tax invoice. | Chúng tôi xin lỗi vì sự chậm trễ nhỏ trong việc xuất hóa đơn thuế cho bạn.",
+      "Our raw materials are carefully tested in the quality control laboratory. | Nguyên liệu thô của chúng tôi được kiểm nghiệm kỹ lưỡng tại phòng QC.",
+      "Have you received the product specifications we sent yesterday? | Bạn đã nhận được bảng thông số sản phẩm chúng tôi gửi hôm qua chưa?",
+      "We look forward to building a long-term partnership with your company. | Chúng tôi mong muốn xây dựng mối quan hệ hợp tác lâu dài với công ty bạn."
+    ],
+    B2: [
+      "sustainability | tính bền vững", "innovation | sự đổi mới sáng tạo", "pharmaceutical | thuộc về dược phẩm", "formulation | công thức bào chế",
+      "concentration | nồng độ, sự cô đặc", "bioavailability | sinh khả dụng", "standardization | sự chuẩn hóa", "contamination | sự nhiễm bẩn",
+      "comprehensive | toàn diện", "significant | đáng kể", "consequence | hệ quả", "perspective | góc nhìn",
+      "implementation | sự triển khai", "optimization | sự tối ưu hóa", "competitive | có tính cạnh tranh", "productivity | năng suất",
+      "infrastructure | cơ sở hạ tầng", "regulation | quy định", "demonstrate | chứng minh", "contribute | đóng góp",
+      "furthermore | hơn thế nữa", "nevertheless | tuy nhiên", "approximately | xấp xỉ, khoảng", "predominantly | phần lớn, chủ yếu",
+      "Spray drying technology helps preserve active compounds in herbal extracts. | Công nghệ sấy phun giúp bảo tồn các hoạt chất trong chiết xuất thảo dược.",
+      "Clinical studies have demonstrated the effectiveness of natural antioxidants. | Các nghiên cứu lâm sàng đã chứng minh hiệu quả của chất chống oxy hóa tự nhiên.",
+      "Strict quality control procedures are essential in pharmaceutical manufacturing. | Quy trình kiểm soát chất lượng nghiêm ngặt là yếu tố sống còn trong sản xuất dược phẩm.",
+      "How can businesses maintain high productivity while working remotely? | Làm thế nào doanh nghiệp có thể duy trì năng suất cao khi làm việc từ xa?",
+      "The rapid development of artificial intelligence is transforming global industries. | Sự phát triển nhanh chóng của trí tuệ nhân tạo đang chuyển đổi các ngành công nghiệp toàn cầu.",
+      "Despite economic challenges, the company achieved remarkable growth this quarter. | Bất chấp những thách thức kinh tế, công ty vẫn đạt mức tăng trưởng ấn tượng trong quý này."
+    ]
+  };
+
   const DEFAULT_LESSONS = [
     {
       id: "default-1",
       level: "A1",
-      title: "Bài mẫu: Chào hỏi cơ bản",
-      desc: "Làm quen với công cụ nghe chép chính tả.",
-      items: [
-        "hello | xin chào",
-        "Hello, nice to meet you. | Xin chào, rất vui được gặp bạn."
-      ]
+      title: "Bài 1: Chào hỏi & Giao tiếp nền tảng",
+      desc: "50 từ vựng và mẫu câu phản xạ từ cơ bản đến hoàn chỉnh.",
+      items: ["hello | xin chào", "good morning | chào buổi sáng"]
     }
   ];
 
-  // Chia nhỏ mỗi 10 câu thành 1 bài học để học sinh không bị ngợp
+  // Hàm nâng cấp mỗi bài học lên đúng 50 câu (xếp Từ vựng đơn lên trước -> Mẫu câu ghép ở sau)
+  function enrichTo50Items(lesson, idx) {
+    const seenEn = new Set();
+    const cleanItems = [];
+
+    function addUnique(rawStr) {
+      if (!rawStr || !rawStr.includes('|')) return;
+      const enKey = rawStr.split('|')[0].trim().toLowerCase();
+      if (!seenEn.has(enKey)) {
+        seenEn.add(enKey);
+        cleanItems.push(rawStr.trim());
+      }
+    }
+
+    // 1. Nạp toàn bộ câu gốc của bài
+    (lesson.items || []).forEach(addUnique);
+
+    // 2. Nếu bài có dưới 50 câu, lấy thêm từ kho cùng cấp độ (và cấp độ liền kề) cho đủ 50 câu
+    const primaryPool = LEVEL_EXPANSION_POOLS[lesson.level] || LEVEL_EXPANSION_POOLS.A1;
+    const allPools = [...primaryPool, ...LEVEL_EXPANSION_POOLS.A1, ...LEVEL_EXPANSION_POOLS.A2, ...LEVEL_EXPANSION_POOLS.B1, ...LEVEL_EXPANSION_POOLS.B2];
+
+    // Dịch chuyển vị trí lấy theo index bài để các bài có bộ câu đa dạng
+    const offset = (idx * 7) % allPools.length;
+    for (let i = 0; i < allPools.length && cleanItems.length < 50; i++) {
+      addUnique(allPools[(offset + i) % allPools.length]);
+    }
+
+    // Sắp xếp: Từ vựng ngắn (1-3 từ) học trước để quen âm, Câu hoàn chỉnh (4 từ trở lên) học sau
+    const words = [];
+    const sentences = [];
+    cleanItems.slice(0, 50).forEach(item => {
+      const en = item.split('|')[0].trim();
+      const wordCount = en.split(/\s+/).length;
+      if (wordCount <= 3) words.push(item);
+      else sentences.push(item);
+    });
+
+    return [...words, ...sentences];
+  }
+
   function buildAllLessons() {
     const raw = (window.EXTRA_LESSONS && window.EXTRA_LESSONS.length) ? window.EXTRA_LESSONS : DEFAULT_LESSONS;
     const custom = JSON.parse(localStorage.getItem('ee_custom_lessons') || '[]');
-    const combined = [...raw, ...custom];
-    const result = [];
 
-    combined.forEach(lesson => {
-      if (lesson.items.length <= 10) {
-        result.push(lesson);
-      } else {
-        for (let i = 0; i < lesson.items.length; i += 10) {
-          const partNum = Math.floor(i / 10) + 1;
-          const chunk = lesson.items.slice(i, i + 10);
-          result.push({
-            id: `${lesson.id}-p${partNum}`,
-            level: lesson.level,
-            title: `${lesson.title} (Phần ${partNum})`,
-            desc: `${lesson.desc} - ${chunk.length} mục luyện tập.`,
-            items: chunk
-          });
-        }
-      }
+    const enrichedStandard = raw.map((lesson, idx) => {
+      const items50 = enrichTo50Items(lesson, idx);
+      return {
+        id: lesson.id,
+        level: lesson.level,
+        title: lesson.title,
+        desc: `${lesson.desc} (Chuẩn 50 mục: Từ vựng cốt lõi & Mẫu câu phản xạ)`,
+        items: items50
+      };
     });
-    return result;
+
+    return [...enrichedStandard, ...custom];
   }
 
   let ALL_LESSONS = buildAllLessons();
@@ -597,13 +855,15 @@
   let speechRate = 1.0;
   let isAnswerRevealed = false;
   let justCheckedCorrect = false;
+  let activeNotebookTab = 'current'; // 'current' | 'all'
 
-  // Trạng thái lưu trữ
+  // Lưu trữ LocalStorage
   let progressMap = JSON.parse(localStorage.getItem('ee_progress') || '{}');
   let mistakesList = JSON.parse(localStorage.getItem('ee_mistakes') || '[]');
+  let savedNotebook = JSON.parse(localStorage.getItem('ee_notebook') || '[]');
   let streak = parseInt(localStorage.getItem('ee_streak') || '0', 10);
 
-  // AudioContext tạo âm thanh ting-ting / báo lỗi
+  // Âm thanh phản hồi
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playTone(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -628,7 +888,7 @@
     }
   }
 
-  // Nạp danh sách giọng đọc tiếng Anh chất lượng cao
+  // Nạp giọng đọc chất lượng cao
   let voices = [];
   function loadVoices() {
     const allVoices = window.speechSynthesis.getVoices();
@@ -642,7 +902,6 @@
       select.appendChild(opt);
       return;
     }
-    // Ưu tiên giọng Google / Microsoft Natural rõ và to nhất lên đầu
     voices.sort((a, b) => {
       const score = v => (v.name.includes('Google') ? 3 : 0) + (v.name.includes('Natural') ? 2 : 0) + (v.lang === 'en-US' ? 1 : 0);
       return score(b) - score(a);
@@ -662,13 +921,13 @@
     let totalDone = 0;
     Object.values(progressMap).forEach(arr => totalDone += arr.length);
     document.getElementById('masteredCount').textContent = `${totalDone} câu`;
+    document.getElementById('savedVocabCount').textContent = savedNotebook.length;
   }
 
   function renderLessons() {
     const grid = document.getElementById('lessonGrid');
     grid.innerHTML = '';
 
-    // Thêm thẻ Sổ tay câu hay làm sai nếu có dữ liệu
     if (mistakesList.length > 0 && currentFilter === 'ALL') {
       const mCard = document.createElement('div');
       mCard.className = 'lesson-card mistake-card';
@@ -726,19 +985,27 @@
 
   function parseItem(rawStr) {
     const parts = rawStr.split('|');
-    return {
-      en: (parts[0] || '').trim(),
-      vi: (parts[1] || 'Chưa có nghĩa tiếng Việt').trim()
-    };
+    const en = (parts[0] || '').trim();
+    const vi = (parts[1] || 'Chưa có nghĩa tiếng Việt').trim();
+    const isWord = en.split(/\s+/).length <= 3;
+    return { en, vi, isWord };
   }
 
   function startLesson(lesson) {
     currentLesson = lesson;
-    currentIndex = 0;
+    // Tự động nhảy tới câu đầu tiên chưa làm trong bài 50 câu (hoặc về câu 0 nếu đã làm hết)
+    const doneArr = progressMap[lesson.id] || [];
+    let firstUndone = 0;
+    for (let i = 0; i < lesson.items.length; i++) {
+      if (!doneArr.includes(i)) { firstUndone = i; break; }
+    }
+    currentIndex = firstUndone;
+
     document.getElementById('homeView').classList.add('hidden');
     document.getElementById('practiceView').classList.remove('hidden');
     document.getElementById('lessonTitleHeader').textContent = lesson.title;
     loadCurrentItem();
+    renderNotebookSidebar();
   }
 
   function goHome() {
@@ -757,6 +1024,7 @@
 
     const item = parseItem(currentLesson.items[currentIndex]);
     document.getElementById('itemCounter').textContent = `Câu ${currentIndex + 1} / ${currentLesson.items.length}`;
+    document.getElementById('itemTypeBadge').textContent = item.isWord ? '🔤 Từ vựng' : '💬 Mẫu câu';
     document.getElementById('viMeaningText').textContent = item.vi;
     document.getElementById('userInput').value = '';
     document.getElementById('feedbackArea').style.display = 'none';
@@ -778,21 +1046,23 @@
     speakCurrent();
   }
 
-  function speakCurrent() {
-    if (!currentLesson) return;
+  function speakText(text) {
     window.speechSynthesis.cancel();
-    const item = parseItem(currentLesson.items[currentIndex]);
-    const utter = new SpeechSynthesisUtterance(item.en);
+    const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'en-US';
     utter.rate = speechRate;
-    utter.volume = 1.0; // Âm lượng tối đa 100%
+    utter.volume = 1.0;
     utter.pitch = 1.0;
 
     const voiceIdx = document.getElementById('voiceSelect').value;
-    if (voices[voiceIdx]) {
-      utter.voice = voices[voiceIdx];
-    }
+    if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
     window.speechSynthesis.speak(utter);
+  }
+
+  function speakCurrent() {
+    if (!currentLesson) return;
+    const item = parseItem(currentLesson.items[currentIndex]);
+    speakText(item.en);
   }
 
   // Công tắc Hiện / Ẩn đáp án 1 click linh hoạt
@@ -851,6 +1121,90 @@
     }
   }
 
+  // SỔ TAY TỪ VỰNG BÊN PHẢI: Tự động ghi chú khi trả lời xong
+  function addNoteToSidebar(rawItem, lessonId) {
+    const parsed = parseItem(rawItem);
+    const existsIdx = savedNotebook.findIndex(n => n.en.toLowerCase() === parsed.en.toLowerCase());
+
+    if (existsIdx === -1) {
+      savedNotebook.unshift({
+        en: parsed.en,
+        vi: parsed.vi,
+        isWord: parsed.isWord,
+        lessonId: lessonId,
+        note: '',
+        time: Date.now()
+      });
+      localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook));
+    }
+    renderNotebookSidebar();
+    updateHeaderStats();
+  }
+
+  function manualNoteCurrent() {
+    if (!currentLesson) return;
+    addNoteToSidebar(currentLesson.items[currentIndex], currentLesson.id);
+  }
+
+  function switchNotebookTab(tab) {
+    activeNotebookTab = tab;
+    document.getElementById('tabCurrentLesson').classList.toggle('active', tab === 'current');
+    document.getElementById('tabAllSaved').classList.toggle('active', tab === 'all');
+    renderNotebookSidebar();
+  }
+
+  function updateUserNote(enText, val) {
+    const item = savedNotebook.find(n => n.en === enText);
+    if (item) {
+      item.note = val;
+      localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook));
+    }
+  }
+
+  function renderNotebookSidebar() {
+    if (!currentLesson) return;
+    const listEl = document.getElementById('notebookList');
+    const currentItems = savedNotebook.filter(n => n.lessonId === currentLesson.id);
+
+    document.getElementById('nbCurrentCount').textContent = currentItems.length;
+    document.getElementById('nbAllCount').textContent = savedNotebook.length;
+
+    const displayList = activeNotebookTab === 'current' ? currentItems : savedNotebook;
+
+    if (displayList.length === 0) {
+      listEl.innerHTML = `<div class="nb-empty">Chưa có mục nào.<br>Mỗi khi bạn trả lời đúng (hoặc bấm "📌 Lưu sổ tay"), từ vựng & mẫu câu sẽ tự động note sang đây!</div>`;
+      return;
+    }
+
+    listEl.innerHTML = '';
+    displayList.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'notebook-item';
+      div.innerHTML = `
+        <div class="nb-item-top">
+          <span class="nb-en">${item.en}</span>
+          <button class="btn btn-sm" title="Nghe lại" onclick='speakText(${JSON.stringify(item.en)})'>🔊</button>
+        </div>
+        <div class="nb-vi">👉 ${item.vi}</div>
+        <input class="nb-note-input" type="text" placeholder="✏️ Ghi chú thêm (cách đọc, ngữ pháp...)" value="${(item.note || '').replace(/"/g, '&quot;')}" onchange='updateUserNote(${JSON.stringify(item.en)}, this.value)' />
+      `;
+      listEl.appendChild(div);
+    });
+  }
+
+  function copyNotebook() {
+    const currentItems = savedNotebook.filter(n => currentLesson && n.lessonId === currentLesson.id);
+    const list = activeNotebookTab === 'current' ? currentItems : savedNotebook;
+    if (list.length === 0) {
+      alert('Sổ tay đang trống, hãy hoàn thành vài câu trước nhé!');
+      return;
+    }
+    const lines = list.map((item, idx) => `${idx + 1}. ${item.en} : ${item.vi}${item.note ? ' (' + item.note + ')' : ''}`);
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      alert(`✅ Đã copy ${list.length} mục trong Sổ tay! Bạn có thể Ctrl+V dán ra Zalo hoặc Word ngay.`);
+    });
+  }
+
   function checkAnswer() {
     const rawItem = currentLesson.items[currentIndex];
     const item = parseItem(rawItem);
@@ -882,9 +1236,12 @@
       playTone('success');
       streak++;
       justCheckedCorrect = true;
-      html += `<div style="margin-top:10px; color:#34d399; font-weight:700;">🎉 Chính xác 100%! Nhấn Enter lần nữa để sang câu tiếp theo.</div>`;
+      html += `<div style="margin-top:10px; color:#34d399; font-weight:700;">🎉 Chính xác 100%! Đã tự động lưu vào Sổ tay bên phải. Nhấn Enter để sang câu tiếp theo.</div>`;
 
-      // Lưu tiến độ
+      // Tự động lưu ngay vào cột Sổ tay từ vựng bên phải
+      addNoteToSidebar(rawItem, currentLesson.id);
+
+      // Lưu tiến độ bài học
       if (currentLesson.id !== 'mistakes-review') {
         if (!progressMap[currentLesson.id]) progressMap[currentLesson.id] = [];
         if (!progressMap[currentLesson.id].includes(currentIndex)) {
@@ -892,7 +1249,6 @@
         }
         localStorage.setItem('ee_progress', JSON.stringify(progressMap));
       } else {
-        // Xóa khỏi sổ tay lỗi sai nếu làm đúng
         mistakesList = mistakesList.filter(m => m !== rawItem);
         localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
       }
@@ -902,7 +1258,6 @@
       justCheckedCorrect = false;
       html += `<div style="margin-top:10px; color:#f87171; font-size:0.9rem;">⚠️ Chưa khớp hoàn toàn, nghe lại và sửa các từ màu đỏ/vàng nhé!</div>`;
 
-      // Lưu vào sổ tay lỗi sai
       if (!mistakesList.includes(rawItem)) {
         mistakesList.push(rawItem);
         localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
@@ -919,7 +1274,7 @@
       currentIndex++;
       loadCurrentItem();
     } else {
-      alert('🎉 Chúc mừng! Bạn đã hoàn thành toàn bộ bài học này!');
+      alert('🎉 Tuyệt vời! Bạn đã hoàn thành trọn vẹn 50 câu của bài học này!');
       goHome();
     }
   }
@@ -927,6 +1282,7 @@
   // Phím tắt bàn phím
   document.addEventListener('keydown', (e) => {
     if (document.getElementById('practiceView').classList.contains('hidden')) return;
+    if (document.activeElement && document.activeElement.classList.contains('nb-note-input')) return;
 
     if (e.ctrlKey && e.code === 'Space') {
       e.preventDefault();
@@ -944,7 +1300,6 @@
     }
   });
 
-  // Modal tự nhập bài
   function openCustomModal() { document.getElementById('customModal').style.display = 'flex'; }
   function closeCustomModal() { document.getElementById('customModal').style.display = 'none'; }
   function saveCustomLesson() {
@@ -959,7 +1314,7 @@
       id: 'custom-' + Date.now(),
       level: 'A2',
       title: title,
-      desc: 'Bài học tự nhập cá nhân',
+      desc: `Bài học tự tạo (${rawLines.length} câu)`,
       items: rawLines
     };
     custom.push(newLesson);
@@ -970,7 +1325,6 @@
     startLesson(newLesson);
   }
 
-  // Khởi chạy ban đầu
   renderLessons();
   updateHeaderStats();
 </script>
