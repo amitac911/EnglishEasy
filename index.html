@@ -124,6 +124,8 @@
       padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; cursor: pointer;
     }
     .filter-btn.active, .filter-btn:hover { background: var(--primary); color: #0f172a; border-color: var(--primary); }
+    .filter-btn.mistake-filter { border-color: rgba(239, 68, 68, 0.5); color: #fca5a5; }
+    .filter-btn.mistake-filter:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
 
     .lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
     .lesson-card {
@@ -183,7 +185,13 @@
     .toggle-label { cursor: pointer; display: inline-flex; align-items: center; gap: 5px; color: #e2e8f0; }
     select.voice-select { background: #0f172a; color: #f8fafc; border: 1px solid var(--card-border); padding: 5px 9px; border-radius: 8px; font-size: 0.82rem; max-width: 210px; }
 
-    .meaning-box { background: rgba(56, 189, 248, 0.09); border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.95rem; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .meaning-box { background: rgba(56, 189, 248, 0.09); border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; font-size: 0.95rem; color: #e2e8f0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .context-blank-box {
+      background: rgba(129, 140, 248, 0.14); border: 1px dashed rgba(129, 140, 248, 0.55);
+      padding: 12px 15px; border-radius: 10px; margin-bottom: 14px; display: none;
+    }
+    .context-blank-box .cb-title { font-size: 0.78rem; color: #a5b4fc; font-weight: 700; margin-bottom: 4px; }
+    .context-blank-box .cb-sentence { font-size: 1.08rem; font-weight: 700; color: #f8fafc; }
 
     textarea.dictation-input {
       width: 100%; background: rgba(15, 23, 42, 0.9); border: 2px solid rgba(148, 163, 184, 0.25);
@@ -289,7 +297,7 @@
   <section id="homeView">
     <div class="hero">
       <h1>Biết thêm một ngoại ngữ là sống thêm một cuộc đời</h1>
-      <p>Lộ trình 50 câu/bài từ từ vựng đơn lẻ đến phản xạ câu — Đồng bộ tiến độ đám mây & Sổ tay từ vựng.</p>
+      <p>Lộ trình 50 mục/bài từ hội thoại thực tế, mẫu câu giao tiếp đến từ vựng — Đồng bộ tiến độ đám mây.</p>
       <div id="syncStatusBanner" class="sync-banner guest">
         ⚠️ Bạn đang học ở chế độ Khách (lưu trên máy này). Hãy bấm <strong>🔑 Đăng nhập Google</strong> ở góc phải để lưu tiến độ lên mây!
       </div>
@@ -305,6 +313,7 @@
       <button class="filter-btn" onclick="filterLessons('A2', this)">A2 - Giao tiếp</button>
       <button class="filter-btn" onclick="filterLessons('B1', this)">B1 - Công việc</button>
       <button class="filter-btn" onclick="filterLessons('B2', this)">B2 - IELTS / Tin tức</button>
+      <button class="filter-btn mistake-filter" onclick="openMistakesReview()">⚠️ Ôn lỗi sai (<span id="filterMistakeCount">0</span>)</button>
     </div>
 
     <div id="lessonGrid" class="lesson-grid"></div>
@@ -318,7 +327,7 @@
           <button class="btn" onclick="goHome()">← Danh sách bài</button>
           <div style="font-weight: 700; color: var(--primary);" id="lessonTitleHeader">Bài 1</div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span class="type-badge" id="itemTypeBadge">🔤 Từ vựng</span>
+            <span class="type-badge" id="itemTypeBadge">💬 Mẫu câu</span>
             <span style="font-size: 0.88rem; color: var(--text-muted); font-weight:600;" id="itemCounter">Câu 1 / 50</span>
           </div>
         </div>
@@ -345,7 +354,8 @@
               <select id="voiceSelect" class="voice-select" onchange="speakCurrent()"></select>
             </div>
             <div class="toggle-chips">
-              <label class="toggle-label"><input type="checkbox" id="shuffleToggle" onchange="toggleShuffleMode()" /> 🔀 Trộn ngẫu nhiên</label>
+              <label class="toggle-label"><input type="checkbox" id="shuffleToggle" onchange="toggleShuffleMode()" /> 🔀 Trộn câu</label>
+              <label class="toggle-label" title="Nghe cả câu và chỉ gõ từ còn thiếu đúng thì / số nhiều"><input type="checkbox" id="contextBlankToggle" onchange="toggleContextBlankMode()" /> 🧩 Điền từ ngữ cảnh</label>
               <label class="toggle-label"><input type="checkbox" id="mechSoundToggle" checked /> ⌨️ Phím cơ</label>
               <label class="toggle-label"><input type="checkbox" id="hideMeaningToggle" onchange="toggleMeaningVisibility()" /> 🙈 Ẩn nghĩa</label>
             </div>
@@ -357,11 +367,16 @@
           <button class="btn btn-sm" onclick="manualNoteCurrent()">📌 Lưu sổ tay</button>
         </div>
 
+        <div class="context-blank-box" id="contextBlankBox">
+          <div class="cb-title">🧩 Chế độ chia từ trong ngữ cảnh — Nghe cả câu và gõ đúng dạng từ vào ô trống:</div>
+          <div class="cb-sentence" id="contextBlankSentence">...</div>
+        </div>
+
         <textarea id="userInput" class="dictation-input" rows="2" placeholder="Nghe và gõ lại chính xác từ hoặc câu bạn nghe được..."></textarea>
 
         <div class="action-row">
           <button class="btn btn-primary" onclick="checkAnswer()">✓ Kiểm tra (Enter)</button>
-          <button class="btn btn-warning" onclick="hintNextWord()">💡 Gợi ý 1 từ</button>
+          <button class="btn btn-warning" id="hintBtn" onclick="hintNextStep()">💡 Gợi ý 1 từ</button>
           <button class="btn" id="toggleAnswerBtn" onclick="toggleAnswerReveal()">👁️ Hiện đáp án</button>
           <button class="btn" onclick="nextItem()">Câu tiếp theo →</button>
         </div>
@@ -374,7 +389,7 @@
         <div id="feedbackArea" class="feedback-area"></div>
 
         <div class="shortcut-hint" id="shortcutHintText">
-          Phím tắt: <kbd>Tab</kbd> hoặc <kbd>Ctrl</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Alt</kbd>+<kbd>H</kbd> Gợi ý từ
+          Phím tắt: <kbd>Tab</kbd> hoặc <kbd>Ctrl</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Alt</kbd>+<kbd>H</kbd> Gợi ý
         </div>
       </div>
 
@@ -477,7 +492,6 @@
 
 <script src="lessons.js"></script>
 <script>
-  // CẤU HÌNH FIREBASE CỦA DỰ ÁN englisheasy-8a894
   const firebaseConfig = {
     apiKey: "AIzaSyDMeM5eWF2-6btGRYlANNW8tWkTrwY1h4M",
     authDomain: "englisheasy-8a894.firebaseapp.com",
@@ -488,7 +502,6 @@
     measurementId: "G-5T4L7LNKJY"
   };
 
-  // Tài khoản Admin chính thức
   const HARDCODED_ADMIN_EMAIL = "tuyenpaa1@gmail.com";
 
   let auth = null, db = null, currentUser = null;
@@ -559,65 +572,89 @@
   const savedCustomBg = localStorage.getItem('ee_custom_bg');
   if (savedCustomBg) document.documentElement.style.setProperty('--bg-image', `url('${savedCustomBg}')`);
 
+  // Kho hội thoại & câu ngữ cảnh giàu chia thì / danh từ số nhiều để bổ sung bài học
   const LEVEL_POOLS = {
     A1: [
-      "hello | xin chào", "morning | buổi sáng", "afternoon | buổi chiều", "evening | buổi tối",
-      "tomorrow | ngày mai", "yesterday | hôm qua", "weekend | cuối tuần", "together | cùng nhau",
-      "always | luôn luôn", "usually | thường xuyên", "sometimes | thỉnh thoảng", "never | không bao giờ",
-      "early | sớm", "late | muộn", "ready | sẵn sàng", "busy | bận rộn",
-      "hungry | đói bụng", "thirsty | khát nước", "tired | mệt mỏi", "happy | vui vẻ",
-      "weather | thời tiết", "breakfast | bữa sáng", "lunch | bữa trưa", "dinner | bữa tối",
-      "favorite | yêu thích", "important | quan trọng", "different | khác biệt", "easy | dễ dàng",
-      "difficult | khó khăn", "neighbor | hàng xóm", "company | công ty", "hospital | bệnh viện",
-      "supermarket | siêu thị", "restaurant | nhà hàng", "airport | sân bay",
-      "Good morning, how are you doing today? | Chào buổi sáng, hôm nay bạn thế nào?",
-      "I usually wake up at six o'clock every morning. | Tôi thường thức dậy lúc 6 giờ mỗi sáng.",
-      "She does not drink coffee in the evening. | Cô ấy không uống cà phê vào buổi tối.",
-      "Do you have enough time to help me today? | Hôm nay bạn có đủ thời gian giúp tôi không?",
-      "We are going to the supermarket after work. | Chúng tôi sẽ đi siêu thị sau giờ làm việc.",
-      "He is very busy with his new project right now. | Hiện tại anh ấy đang rất bận với dự án mới.",
-      "Are they waiting for us at the main gate? | Họ có đang đợi chúng ta ở cổng chính không?",
-      "My younger brother studies English every weekend. | Em trai tôi học tiếng Anh vào mỗi cuối tuần.",
-      "I do not know how to get to the train station. | Tôi không biết đường đi đến nhà ga.",
-      "What time do you usually have dinner with your family? | Bạn thường ăn tối cùng gia đình lúc mấy giờ?"
+      "Good morning, how are you doing today? I am doing great, thank you! | Chào buổi sáng, hôm nay bạn thế nào? Mình rất khỏe, cảm ơn bạn!",
+      "Excuse me, where is the nearest subway station? It is right across the street. | Xin lỗi, ga tàu điện ngầm gần nhất ở đâu? Nó nằm ngay bên kia đường.",
+      "I have met your older brother at the coffee shop twice. | Tôi đã gặp anh trai của bạn ở quán cà phê hai lần rồi.",
+      "She usually wakes up at six o'clock and prepares breakfast for her family. | Cô ấy thường thức dậy lúc 6 giờ và chuẩn bị bữa sáng cho gia đình.",
+      "Do you have enough time to help me with this homework today? | Hôm nay bạn có đủ thời gian giúp tôi làm bài tập về nhà này không?",
+      "We are going to the supermarket after work to buy some fresh vegetables. | Chúng tôi sẽ đi siêu thị sau giờ làm để mua ít rau tươi.",
+      "He is very busy with his new project at the office right now. | Hiện tại anh ấy đang rất bận với dự án mới ở văn phòng.",
+      "What time do you usually have dinner with your family? Usually around seven. | Bạn thường ăn tối cùng gia đình lúc mấy giờ? Thường khoảng 7 giờ.",
+      "Can I pay by credit card here? Yes, we accept both cash and cards. | Tôi có thể thanh toán bằng thẻ tín dụng ở đây không? Vâng, chúng tôi nhận cả tiền mặt và thẻ.",
+      "My younger brother studies English every weekend with his friends. | Em trai tôi học tiếng Anh vào mỗi cuối tuần cùng các bạn.",
+      "How much does this blue jacket cost? It is forty dollars. | Chiếc áo khoác xanh này giá bao nhiêu? Nó có giá 40 đô la.",
+      "They have lived in Hanoi for more than five years. | Họ đã sống ở Hà Nội được hơn năm năm rồi."
     ],
     A2: [
-      "appointment | cuộc hẹn", "schedule | lịch trình", "reservation | đặt chỗ trước", "luggage | hành lý",
-      "passport | hộ chiếu", "boarding pass | thẻ lên máy bay", "departure | khởi hành", "arrival | điểm đến",
-      "receptionist | lễ tân", "customer | khách hàng", "experience | kinh nghiệm", "direction | phương hướng",
-      "traffic | giao thông", "convenient | thuận tiện", "comfortable | thoải mái", "expensive | đắt đỏ",
-      "reasonable | hợp lý", "available | có sẵn", "recommend | giới thiệu, đề xuất", "confirm | xác nhận",
-      "cancel | hủy bỏ", "delay | trì hoãn", "immediately | ngay lập tức", "recently | gần đây",
-      "Could you please confirm my hotel reservation? | Bạn vui lòng xác nhận giúp đặt phòng khách sạn của tôi được không?",
-      "I would like to book a table for four people tonight. | Tôi muốn đặt một bàn cho bốn người vào tối nay.",
-      "The flight was delayed for two hours due to bad weather. | Chuyến bay đã bị hoãn hai tiếng vì thời tiết xấu.",
-      "How long does it take to get to the airport by taxi? | Đi taxi đến sân bay mất bao lâu?"
+      "Hello, I would like to book a table for four people tonight. Certainly, what time? | Xin chào, tôi muốn đặt một bàn cho bốn người tối nay. Chắc chắn rồi, mấy giờ ạ?",
+      "Could you please confirm my hotel reservation for this weekend? | Bạn vui lòng xác nhận giúp đặt phòng khách sạn của tôi vào cuối tuần này được không?",
+      "The doctor has three important appointments scheduled for tomorrow morning. | Bác sĩ có ba cuộc hẹn quan trọng được lên lịch vào sáng mai.",
+      "The flight was delayed for two hours due to heavy rain at the airport. | Chuyến bay đã bị hoãn hai tiếng do mưa lớn tại sân bay.",
+      "How long does it take to get to the city center by taxi? About twenty minutes. | Đi taxi vào trung tâm thành phố mất bao lâu? Khoảng hai mươi phút.",
+      "I have already packed my luggage and printed the boarding pass. | Tôi đã đóng gói hành lý xong và in thẻ lên máy bay rồi.",
+      "Could you recommend a good local restaurant near our hotel? | Bạn có thể giới thiệu một nhà hàng địa phương ngon gần khách sạn của chúng tôi không?",
+      "We attended two long meetings yesterday afternoon with the marketing team. | Chiều hôm qua chúng tôi đã tham dự hai cuộc họp dài với đội tiếp thị.",
+      "Is this discount still available if I buy two items? Yes, you get twenty percent off. | Ưu đãi này vẫn áp dụng nếu tôi mua hai món chứ? Vâng, bạn được giảm 20%.",
+      "She went to the pharmacy to buy some medicine for her sore throat. | Cô ấy đã đến hiệu thuốc để mua một ít thuốc trị đau họng."
     ],
     B1: [
-      "deadline | hạn chót", "requirement | yêu cầu", "quotation | bảng báo giá", "invoice | hóa đơn",
-      "supplier | nhà cung cấp", "manufacturer | nhà sản xuất", "ingredient | thành phần, nguyên liệu", "quality | chất lượng",
-      "delivery | giao hàng", "warehouse | kho hàng", "inventory | hàng tồn kho", "contract | hợp đồng",
-      "negotiate | đàm phán", "collaborate | hợp tác", "responsibility | trách nhiệm", "opportunity | cơ hội",
-      "We will send you the official quotation and sample tomorrow morning. | Chúng tôi sẽ gửi bảng báo giá chính thức và mẫu thử cho bạn vào sáng mai.",
-      "The production team is working hard to meet the delivery deadline. | Đội ngũ sản xuất đang làm việc chăm chỉ để kịp tiến độ giao hàng.",
-      "Could you please check the inventory before confirming the order? | Bạn vui lòng kiểm tra tồn kho trước khi xác nhận đơn hàng nhé?"
+      "We will send you the official quotation and product samples tomorrow morning. | Chúng tôi sẽ gửi bảng báo giá chính thức và mẫu sản phẩm cho bạn vào sáng mai.",
+      "Could you please check the warehouse inventory before confirming the order? | Bạn vui lòng kiểm tra tồn kho trước khi xác nhận đơn hàng nhé?",
+      "The production team is working overtime to meet the Friday delivery deadline. | Đội ngũ sản xuất đang làm thêm giờ để kịp hạn giao hàng thứ Sáu.",
+      "We have negotiated better payment terms with our main raw material suppliers. | Chúng tôi đã đàm phán được điều khoản thanh toán tốt hơn với các nhà cung cấp nguyên liệu chính.",
+      "All departments must collaborate closely to ensure consistent product quality. | Tất cả các phòng ban phải hợp tác chặt chẽ để đảm bảo chất lượng sản phẩm đồng đều.",
+      "Have you reviewed the updated contract that our legal team sent yesterday? | Bạn đã xem qua bản hợp đồng cập nhật mà bộ phận pháp chế gửi hôm qua chưa?"
     ],
     B2: [
-      "sustainability | tính bền vững", "innovation | sự đổi mới sáng tạo", "pharmaceutical | thuộc về dược phẩm", "formulation | công thức bào chế",
-      "concentration | nồng độ, sự cô đặc", "bioavailability | sinh khả dụng", "standardization | sự chuẩn hóa", "contamination | sự nhiễm bẩn",
-      "comprehensive | toàn diện", "significant | đáng kể", "consequence | hệ quả", "perspective | góc nhìn",
-      "Spray drying technology helps preserve active compounds in herbal extracts. | Công nghệ sấy phun giúp bảo tồn các hoạt chất trong chiết xuất thảo dược.",
-      "Strict quality control procedures are essential in pharmaceutical manufacturing. | Quy trình kiểm soát chất lượng nghiêm ngặt là yếu tố sống còn trong sản xuất dược phẩm."
+      "Spray drying technology helps preserve bioactive compounds in herbal extracts. | Công nghệ sấy phun giúp bảo tồn các hợp chất có hoạt tính sinh học trong chiết xuất thảo dược.",
+      "Strict quality control procedures are essential throughout pharmaceutical manufacturing. | Quy trình kiểm soát chất lượng nghiêm ngặt là yếu tố sống còn trong suốt quá trình sản xuất dược phẩm.",
+      "Recent clinical studies have demonstrated significant improvements in bioavailability. | Các nghiên cứu lâm sàng gần đây đã chứng minh những cải thiện đáng kể về sinh khả dụng.",
+      "Standardizing active ingredients ensures reliable therapeutic outcomes for patients. | Việc chuẩn hóa các hoạt chất đảm bảo hiệu quả điều trị ổn định cho bệnh nhân."
     ]
   };
 
+  // Từ điển từ gốc để gợi ý trong chế độ "Điền từ ngữ cảnh"
+  const LEMMA_MAP = {
+    met: "meet", meeting: "meet", meetings: "meet",
+    went: "go", going: "go", gone: "go",
+    bought: "buy", buying: "buy",
+    appointments: "appointment",
+    scheduled: "schedule",
+    delayed: "delay",
+    packed: "pack", printed: "print",
+    attended: "attend",
+    lived: "live",
+    studies: "study", studied: "study",
+    wakes: "wake", prepares: "prepare",
+    working: "work", worked: "work",
+    negotiated: "negotiate", suppliers: "supplier",
+    reviewed: "review", sent: "send",
+    confirmed: "confirm", confirming: "confirm",
+    samples: "sample", items: "item",
+    demonstrated: "demonstrate", improvements: "improvement",
+    studies: "study", patients: "patient", compounds: "compound", extracts: "extract"
+  };
+
+  const STOPWORDS = new Set([
+    "the","and","for","are","but","not","you","all","can","her","was","one","our","out",
+    "has","have","had","this","that","with","from","they","will","would","there","their",
+    "what","about","which","when","make","like","time","just","know","take","into","year",
+    "your","good","some","could","them","than","then","now","look","only","come","its","over",
+    "also","after","use","two","how","work","first","well","way","even","new","want","because",
+    "any","these","give","most","yes","please","hello","very","much","more","here","right"
+  ]);
+
   const DEFAULT_LESSONS = [
-    { id: "default-1", level: "A1", title: "Bài 1: Chào hỏi & Giao tiếp nền tảng", desc: "Luyện từ vựng và mẫu câu phản xạ cơ bản.", items: LEVEL_POOLS.A1 },
-    { id: "default-2", level: "A2", title: "Bài 2: Du lịch & Đặt phòng khách sạn", desc: "Tình huống giao tiếp thực tế khi đi nước ngoài.", items: LEVEL_POOLS.A2 },
-    { id: "default-3", level: "B1", title: "Bài 3: Giao tiếp Công sở & Đơn hàng", desc: "Từ vựng và mẫu câu trao đổi công việc hàng ngày.", items: LEVEL_POOLS.B1 },
-    { id: "default-4", level: "B2", title: "Bài 4: Khoa học & Dược phẩm Chuyên sâu", desc: "Luyện nghe thuật ngữ và câu học thuật chuẩn.", items: LEVEL_POOLS.B2 }
+    { id: "default-1", level: "A1", title: "Bài 1: Chào hỏi & Hội thoại nền tảng", desc: "Luyện nghe hội thoại ngắn và mẫu câu phản xạ cơ bản.", items: LEVEL_POOLS.A1 },
+    { id: "default-2", level: "A2", title: "Bài 2: Du lịch, Đặt phòng & Mua sắm", desc: "Hội thoại thực tế tại sân bay, khách sạn và cửa hàng.", items: LEVEL_POOLS.A2 },
+    { id: "default-3", level: "B1", title: "Bài 3: Giao tiếp Công sở & Đơn hàng", desc: "Trao đổi báo giá, hợp đồng và tiến độ công việc.", items: LEVEL_POOLS.B1 },
+    { id: "default-4", level: "B2", title: "Bài 4: Khoa học & Dược phẩm Chuyên sâu", desc: "Luyện nghe câu học thuật và thuật ngữ chuyên ngành.", items: LEVEL_POOLS.B2 }
   ];
 
+  // Giữ nguyên 100% thứ tự hội thoại/câu gốc của bài học, chỉ bổ sung thêm câu/hội thoại ở cuối nếu chưa đủ 50
   function enrichTo50Items(lesson, idx) {
     const seen = new Set();
     const list = [];
@@ -627,17 +664,14 @@
       if (key && !seen.has(key)) { seen.add(key); list.push(str.trim()); }
     };
     if (Array.isArray(lesson.items)) lesson.items.forEach(add);
+
     const primary = LEVEL_POOLS[lesson.level] || LEVEL_POOLS.A1;
     const all = [...primary, ...LEVEL_POOLS.A1, ...LEVEL_POOLS.A2, ...LEVEL_POOLS.B1, ...LEVEL_POOLS.B2];
-    const offset = (idx * 7) % all.length;
-    for (let i = 0; i < all.length && list.length < 50; i++) add(all[(offset + i) % all.length]);
-
-    const words = [], sentences = [];
-    list.slice(0, 50).forEach(it => {
-      if (it.split('|')[0].trim().split(/\s+/).length <= 3) words.push(it);
-      else sentences.push(it);
-    });
-    return [...words, ...sentences];
+    const offset = (idx * 5) % all.length;
+    for (let i = 0; i < all.length && list.length < 50; i++) {
+      add(all[(offset + i) % all.length]);
+    }
+    return list.slice(0, 50);
   }
 
   function buildAllLessons() {
@@ -650,7 +684,7 @@
       id: lesson.id || `lesson-${idx}`,
       level: lesson.level || 'A1',
       title: lesson.title || `Bài ${idx + 1}`,
-      desc: `${lesson.desc || 'Luyện nghe chép chính tả'} (50 mục: Từ vựng & Mẫu câu)`,
+      desc: lesson.desc || 'Luyện nghe hội thoại, mẫu câu và từ vựng theo ngữ cảnh.',
       items: enrichTo50Items(lesson, idx)
     }));
     return [...enriched, ...custom];
@@ -666,6 +700,7 @@
   let justCheckedCorrect = false;
   let activeNotebookTab = 'current';
   let stickerTimer = null;
+  let currentContextBlankTarget = null; // Lưu từ cần điền khi bật chế độ Điền từ ngữ cảnh
 
   let progressMap = safeGetJSON('ee_progress', {});
   let mistakesList = safeGetJSON('ee_mistakes', []);
@@ -1026,7 +1061,21 @@
     Object.values(progressMap).forEach(arr => { if (Array.isArray(arr)) totalDone += arr.length; });
     document.getElementById('masteredCount').textContent = `${totalDone} câu`;
     document.getElementById('savedVocabCount').textContent = savedNotebook.length;
+    document.getElementById('filterMistakeCount').textContent = mistakesList.length;
     document.getElementById('rankBadge').textContent = totalDone >= 500 ? "👑 Huyền thoại" : totalDone >= 250 ? "🔥 Cao thủ" : totalDone >= 100 ? "⚡ Phản xạ Bạc" : totalDone >= 30 ? "🎧 Thợ săn từ" : "🌱 Tân binh";
+  }
+
+  function openMistakesReview() {
+    if (mistakesList.length === 0) {
+      return alert('🎉 Tuyệt vời! Bạn chưa có câu/từ nào bị gõ sai để ôn tập.');
+    }
+    startLesson({
+      id: 'mistakes-review',
+      level: 'ERR',
+      title: 'Sổ tay ôn tập lỗi sai',
+      desc: 'Ôn lại các từ và câu bạn từng gõ nhầm.',
+      items: [...mistakesList]
+    });
   }
 
   function renderLessons() {
@@ -1036,7 +1085,7 @@
       const mCard = document.createElement('div');
       mCard.className = 'lesson-card mistake-card';
       mCard.innerHTML = `<div><span class="level-tag level-ERR">ÔN TẬP LỖI SAI</span><h3>📌 Sổ tay từ & câu hay sai</h3><p>Tổng hợp ${mistakesList.length} mục từng gõ nhầm.</p></div><div class="progress-wrap"><button class="btn btn-danger" style="width:100%; justify-content:center;">Luyện ngay (${mistakesList.length} câu)</button></div>`;
-      mCard.onclick = () => startLesson({ id: 'mistakes-review', level: 'ERR', title: 'Sổ tay ôn tập lỗi sai', desc: '', items: [...mistakesList] });
+      mCard.onclick = openMistakesReview;
       grid.appendChild(mCard);
     }
 
@@ -1066,14 +1115,21 @@
     const parts = rawStr.split('|');
     const en = (parts[0] || '').trim();
     const vi = (parts[1] || 'Chưa có nghĩa tiếng Việt').trim();
-    return { en, vi, isWord: en.split(/\s+/).length <= 3 };
+    const wordsCount = en.split(/\s+/).filter(Boolean).length;
+    const sentenceMarks = (en.match(/[.?!]/g) || []).length;
+    let typeLabel = '💬 Mẫu câu';
+    if (wordsCount === 1) typeLabel = '🔤 Từ đơn';
+    else if (wordsCount <= 3) typeLabel = '📝 Cụm từ';
+    else if (sentenceMarks >= 2 || /\b[AB]:/.test(en)) typeLabel = '🗣️ Hội thoại';
+
+    return { en, vi, wordsCount, isSingleWord: wordsCount === 1, typeLabel };
   }
 
   // Hỗ trợ phím tắt Mac & nút Back trình duyệt
   const isMacOS = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   const hintEl = document.getElementById('shortcutHintText');
   if (hintEl && isMacOS) {
-    hintEl.innerHTML = 'Phím tắt Mac: <kbd>Tab</kbd> hoặc <kbd>Option</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Option</kbd>+<kbd>H</kbd> Gợi ý từ';
+    hintEl.innerHTML = 'Phím tắt Mac: <kbd>Tab</kbd> hoặc <kbd>Option</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Option</kbd>+<kbd>H</kbd> Gợi ý';
   }
 
   window.addEventListener('popstate', () => {
@@ -1128,16 +1184,86 @@
     updateHeaderStats();
   }
 
+  function setupContextBlank(enText) {
+    const useContextBlank = document.getElementById('contextBlankToggle').checked;
+    const box = document.getElementById('contextBlankBox');
+    const input = document.getElementById('userInput');
+    currentContextBlankTarget = null;
+
+    if (!useContextBlank) {
+      box.style.display = 'none';
+      input.placeholder = 'Nghe và gõ lại chính xác từ hoặc câu bạn nghe được...';
+      return;
+    }
+
+    const tokens = enText.split(/\s+/);
+    if (tokens.length < 4) {
+      box.style.display = 'none';
+      input.placeholder = 'Nghe và gõ lại chính xác từ bạn nghe được...';
+      return;
+    }
+
+    // Tìm các từ nội dung (ưu tiên động từ chia thì / danh từ số nhiều) để đục lỗ
+    const candidates = [];
+    tokens.forEach((tok, idx) => {
+      const clean = tok.replace(/[^a-zA-Z']/g, '');
+      const lower = clean.toLowerCase();
+      if (clean.length >= 4 && !STOPWORDS.has(lower)) {
+        const bonus = LEMMA_MAP[lower] ? 3 : 0;
+        candidates.push({ idx, clean, lower, score: bonus + clean.length });
+      }
+    });
+
+    if (candidates.length === 0) {
+      box.style.display = 'none';
+      return;
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    const chosen = candidates[0];
+    currentContextBlankTarget = chosen.clean;
+
+    const lemmaHint = LEMMA_MAP[chosen.lower]
+      ? ` <span style="color:#fbbf24;">(${LEMMA_MAP[chosen.lower]})</span>`
+      : ` <span style="color:#94a3b8;">(${chosen.clean.length} chữ cái)</span>`;
+
+    const maskedSentence = tokens.map((tok, idx) => {
+      if (idx !== chosen.idx) return tok;
+      return tok.replace(chosen.clean, `______${lemmaHint}`);
+    }).join(' ');
+
+    document.getElementById('contextBlankSentence').innerHTML = maskedSentence;
+    box.style.display = 'block';
+    input.placeholder = 'Gõ duy nhất từ còn thiếu vào đây (chia đúng thì / số nhiều)...';
+  }
+
+  function toggleContextBlankMode() {
+    if (!currentLesson) return;
+    const item = parseItem(activeItems[currentIndex]);
+    setupContextBlank(item.en);
+    updateHintButtonLabel();
+    document.getElementById('userInput').focus();
+  }
+
+  function updateHintButtonLabel() {
+    if (!currentLesson || !activeItems[currentIndex]) return;
+    const item = parseItem(activeItems[currentIndex]);
+    const isSingleTarget = item.isSingleWord || Boolean(currentContextBlankTarget);
+    document.getElementById('hintBtn').innerHTML = isSingleTarget ? '💡 Gợi ý 1 chữ' : '💡 Gợi ý 1 từ';
+  }
+
   function loadCurrentItem() {
     justCheckedCorrect = false;
     isAnswerRevealed = false;
     updateAnswerRevealUI();
     const item = parseItem(activeItems[currentIndex]);
     document.getElementById('itemCounter').textContent = `Câu ${currentIndex + 1} / ${activeItems.length}`;
-    document.getElementById('itemTypeBadge').textContent = item.isWord ? '🔤 Từ vựng' : '💬 Mẫu câu';
+    document.getElementById('itemTypeBadge').textContent = item.typeLabel;
     document.getElementById('viMeaningText').textContent = item.vi;
     document.getElementById('userInput').value = '';
     document.getElementById('feedbackArea').style.display = 'none';
+    setupContextBlank(item.en);
+    updateHintButtonLabel();
     document.getElementById('userInput').focus();
     toggleMeaningVisibility();
     setTimeout(() => speakCurrent(), 250);
@@ -1177,7 +1303,10 @@
     const box = document.getElementById('answerRevealBox');
     const btn = document.getElementById('toggleAnswerBtn');
     if (isAnswerRevealed && currentLesson) {
-      document.getElementById('answerRevealText').textContent = parseItem(activeItems[currentIndex]).en;
+      const fullEn = parseItem(activeItems[currentIndex]).en;
+      document.getElementById('answerRevealText').textContent = currentContextBlankTarget
+        ? `${currentContextBlankTarget}  —  (Cả câu: ${fullEn})`
+        : fullEn;
       box.style.display = 'block'; btn.innerHTML = '🙈 Ẩn đáp án'; btn.classList.add('btn-warning');
     } else {
       box.style.display = 'none'; btn.innerHTML = '👁️ Hiện đáp án'; btn.classList.remove('btn-warning');
@@ -1188,14 +1317,36 @@
     return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"]/g, '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
   }
 
-  function hintNextWord() {
-    const targetWords = parseItem(activeItems[currentIndex]).en.split(' ');
-    const typedWords = document.getElementById('userInput').value.trim() ? document.getElementById('userInput').value.trim().split(/\s+/) : [];
+  // Gợi ý thông minh: 1 chữ cái nếu là từ đơn (hoặc điền 1 từ ngữ cảnh), 1 từ nếu là câu dài
+  function hintNextStep() {
+    const item = parseItem(activeItems[currentIndex]);
+    const inputEl = document.getElementById('userInput');
+
+    if (item.isSingleWord || currentContextBlankTarget) {
+      const targetWord = currentContextBlankTarget || item.en;
+      const typed = inputEl.value.trim();
+      let matchLen = 0;
+      while (
+        matchLen < typed.length &&
+        matchLen < targetWord.length &&
+        typed[matchLen].toLowerCase() === targetWord[matchLen].toLowerCase()
+      ) {
+        matchLen++;
+      }
+      if (matchLen < targetWord.length) {
+        inputEl.value = targetWord.slice(0, matchLen + 1);
+        inputEl.focus();
+      }
+      return;
+    }
+
+    const targetWords = item.en.split(/\s+/);
+    const typedWords = inputEl.value.trim() ? inputEl.value.trim().split(/\s+/) : [];
     let nextIdx = 0;
     while (nextIdx < typedWords.length && nextIdx < targetWords.length && normalizeWords(typedWords[nextIdx])[0] === normalizeWords(targetWords[nextIdx])[0]) nextIdx++;
     if (nextIdx < targetWords.length) {
-      document.getElementById('userInput').value = targetWords.slice(0, nextIdx + 1).join(' ') + ' ';
-      document.getElementById('userInput').focus();
+      inputEl.value = targetWords.slice(0, nextIdx + 1).join(' ') + ' ';
+      inputEl.focus();
     }
   }
 
@@ -1257,7 +1408,8 @@
 
   function checkAnswer() {
     const rawItem = activeItems[currentIndex];
-    const targetNorm = normalizeWords(parseItem(rawItem).en);
+    const targetStr = currentContextBlankTarget ? currentContextBlankTarget : parseItem(rawItem).en;
+    const targetNorm = normalizeWords(targetStr);
     const userNorm = normalizeWords(document.getElementById('userInput').value);
     const feedback = document.getElementById('feedbackArea');
     const cardBox = document.getElementById('practiceCardBox');
@@ -1313,7 +1465,7 @@
 
   function nextItem() {
     if (currentIndex < activeItems.length - 1) { currentIndex++; loadCurrentItem(); }
-    else { launchConfetti(); alert('🎉 Xuất sắc! Bạn đã hoàn thành trọn vẹn 50 câu!'); goHome(); }
+    else { launchConfetti(); alert('🎉 Xuất sắc! Bạn đã hoàn thành trọn vẹn bài học!'); goHome(); }
   }
 
   document.getElementById('userInput').addEventListener('input', () => {
@@ -1328,7 +1480,7 @@
       speakCurrent();
     } else if (e.altKey && e.code === 'KeyH') {
       e.preventDefault();
-      hintNextWord();
+      hintNextStep();
     } else if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       justCheckedCorrect ? nextItem() : checkAnswer();
