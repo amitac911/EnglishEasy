@@ -252,6 +252,58 @@
     .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.84); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
     .modal-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 16px; max-width: 620px; width: 100%; padding: 24px; max-height: 85vh; overflow-y: auto; }
     .hidden { display: none !important; }
+
+    /* NUMBER LISTENING PRACTICE VIEW */
+    .btn-number-hero {
+      background: linear-gradient(135deg, #f59e0b, #ec4899);
+      border: none; color: #fff; font-weight: 800;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+    }
+    .btn-number-hero:hover {
+      background: linear-gradient(135deg, #fbbf24, #f472b6);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(236, 72, 153, 0.45);
+    }
+    .num-practice-container {
+      max-width: 880px; margin: 0 auto;
+    }
+    .num-stats-bar {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px;
+    }
+    @media (max-width: 600px) { .num-stats-bar { grid-template-columns: 1fr; } }
+    .num-stat-pill {
+      background: rgba(15, 23, 42, 0.72); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .num-stat-pill .ns-label { font-size: 0.84rem; color: var(--text-muted); font-weight: 600; }
+    .num-stat-pill .ns-val { font-size: 1.35rem; font-weight: 800; color: var(--primary); }
+    .num-mode-bar {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;
+    }
+    .num-mode-btn {
+      background: rgba(30, 41, 59, 0.78); border: 1px solid var(--card-border); color: var(--text-muted);
+      padding: 7px 14px; border-radius: 999px; font-weight: 600; font-size: 0.82rem; cursor: pointer;
+      transition: all 0.18s; font-family: inherit;
+    }
+    .num-mode-btn:hover, .num-mode-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #0f172a; border-color: transparent; font-weight: 700;
+    }
+    .num-prompt-hint {
+      background: rgba(56, 189, 248, 0.09); border-left: 3px solid var(--primary);
+      padding: 11px 15px; border-radius: 10px; margin-bottom: 14px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      font-size: 0.92rem; color: #e2e8f0;
+    }
+    .num-input-field {
+      width: 100%; background: rgba(15, 23, 42, 0.92); border: 2px solid rgba(148, 163, 184, 0.28);
+      border-radius: 14px; padding: 16px 18px; color: #fff; font-size: 1.4rem; font-weight: 700;
+      font-family: inherit; outline: none; margin-bottom: 14px; letter-spacing: 0.5px;
+    }
+    .num-input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+    .num-spoken-text {
+      margin-top: 6px; font-size: 0.96rem; color: #fde047; font-style: italic; font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -303,6 +355,7 @@
       </div>
       <div class="hero-actions">
         <button class="btn btn-primary" onclick="startRandomLesson()">🎲 Học ngẫu nhiên 1 bài bất kỳ</button>
+        <button class="btn btn-number-hero" onclick="openNumberPractice()">🔢 Luyện nghe Số</button>
         <button class="btn" onclick="openBgModal()">🖼️ Cài ảnh nền riêng</button>
       </div>
     </div>
@@ -340,23 +393,23 @@
             </button>
             <div class="speed-group">
               <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Tốc độ:</span>
-              <button class="speed-btn" onclick="setSpeed(0.5, this)">0.5x</button>
-              <button class="speed-btn" onclick="setSpeed(0.65, this)">0.65x</button>
-              <button class="speed-btn" onclick="setSpeed(0.75, this)">0.75x</button>
-              <button class="speed-btn active" onclick="setSpeed(1.0, this)">1.0x</button>
-              <button class="speed-btn" onclick="setSpeed(1.2, this)">1.2x</button>
+              <button class="speed-btn" data-rate="0.5" onclick="setSpeed(0.5, this)">0.5x</button>
+              <button class="speed-btn" data-rate="0.65" onclick="setSpeed(0.65, this)">0.65x</button>
+              <button class="speed-btn" data-rate="0.75" onclick="setSpeed(0.75, this)">0.75x</button>
+              <button class="speed-btn active" data-rate="1" onclick="setSpeed(1.0, this)">1.0x</button>
+              <button class="speed-btn" data-rate="1.2" onclick="setSpeed(1.2, this)">1.2x</button>
             </div>
           </div>
 
           <div class="settings-row">
             <div>
               <label for="voiceSelect">Giọng đọc: </label>
-              <select id="voiceSelect" class="voice-select" onchange="speakCurrent()"></select>
+              <select id="voiceSelect" class="voice-select" onchange="onChangeVoiceSelect(this.value, false)"></select>
             </div>
             <div class="toggle-chips">
               <label class="toggle-label"><input type="checkbox" id="shuffleToggle" onchange="toggleShuffleMode()" /> 🔀 Trộn câu</label>
               <label class="toggle-label" title="Nghe cả câu và chỉ gõ từ còn thiếu đúng thì / số nhiều"><input type="checkbox" id="contextBlankToggle" onchange="toggleContextBlankMode()" /> 🧩 Điền từ ngữ cảnh</label>
-              <label class="toggle-label"><input type="checkbox" id="mechSoundToggle" checked /> ⌨️ Phím cơ</label>
+              <label class="toggle-label"><input type="checkbox" id="mechSoundToggle" checked onchange="syncMechSoundToggle(this.checked)" /> ⌨️ Phím cơ</label>
               <label class="toggle-label"><input type="checkbox" id="hideMeaningToggle" onchange="toggleMeaningVisibility()" /> 🙈 Ẩn nghĩa</label>
             </div>
           </div>
@@ -404,6 +457,100 @@
         </div>
         <div id="notebookList" class="notebook-list"></div>
       </aside>
+    </div>
+  </section>
+
+  <!-- NUMBER LISTENING PRACTICE VIEW -->
+  <section id="numberPracticeView" class="hidden">
+    <div class="num-practice-container">
+      <div class="practice-box" id="numPracticeCardBox">
+        <div class="practice-top">
+          <button class="btn" onclick="goHome()">← Màn hình chính</button>
+          <div style="font-weight: 800; font-size: 1.15rem; color: var(--primary);">🔢 Luyện Nghe Số Tiếng Anh</div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="type-badge" id="numCategoryBadge">🎲 Trộn tất cả</span>
+            <span style="font-size: 0.88rem; color: var(--text-muted); font-weight:700;" id="numItemCounter">Câu 1 / 50</span>
+          </div>
+        </div>
+
+        <div class="num-stats-bar">
+          <div class="num-stat-pill">
+            <span class="ns-label">✅ Số câu đúng</span>
+            <span class="ns-val" id="numStatCorrect" style="color: var(--success);">0</span>
+          </div>
+          <div class="num-stat-pill">
+            <span class="ns-label">📊 Đã làm / Phần này</span>
+            <span class="ns-val" id="numStatTotal">0 / 50</span>
+          </div>
+          <div class="num-stat-pill">
+            <span class="ns-label">🔥 Chuỗi đúng liên tiếp</span>
+            <span class="ns-val" id="numStatStreak" style="color: #fbbf24;">0</span>
+          </div>
+        </div>
+
+        <div class="num-mode-bar" id="numModeBar">
+          <button class="num-mode-btn active" data-mode="ALL" onclick="setNumberMode('ALL', this)">🎲 Trộn tất cả (50 câu)</button>
+          <button class="num-mode-btn" data-mode="TEEN_TY" onclick="setNumberMode('TEEN_TY', this)">🔄 Cặp dễ nhầm -teen/-ty (50 câu)</button>
+          <button class="num-mode-btn" data-mode="PHONE" onclick="setNumberMode('PHONE', this)">📞 Số điện thoại (50 câu)</button>
+          <button class="num-mode-btn" data-mode="PRICE" onclick="setNumberMode('PRICE', this)">💰 Giá tiền $, £ (50 câu)</button>
+          <button class="num-mode-btn" data-mode="DATE" onclick="setNumberMode('DATE', this)">📅 Ngày tháng & Năm (50 câu)</button>
+          <button class="num-mode-btn" data-mode="TIME" onclick="setNumberMode('TIME', this)">⏰ Giờ giấc (50 câu)</button>
+          <button class="num-mode-btn" data-mode="LARGE_PCT" onclick="setNumberMode('LARGE_PCT', this)">📈 Số lớn & Phần trăm (50 câu)</button>
+        </div>
+
+        <div class="audio-controls">
+          <div class="audio-main-row">
+            <button class="play-btn-big" onclick="speakCurrentNumber()">
+              <span>🔊 Nghe lại</span>
+              <span class="wave-bars" id="numWaveBars"><span></span><span></span><span></span></span>
+            </button>
+            <div class="speed-group">
+              <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Tốc độ:</span>
+              <button class="speed-btn num-speed-btn" data-rate="0.5" onclick="setSpeed(0.5, this)">0.5x</button>
+              <button class="speed-btn num-speed-btn" data-rate="0.65" onclick="setSpeed(0.65, this)">0.65x</button>
+              <button class="speed-btn num-speed-btn" data-rate="0.75" onclick="setSpeed(0.75, this)">0.75x</button>
+              <button class="speed-btn num-speed-btn active" data-rate="1" onclick="setSpeed(1.0, this)">1.0x</button>
+              <button class="speed-btn num-speed-btn" data-rate="1.2" onclick="setSpeed(1.2, this)">1.2x</button>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div>
+              <label for="numVoiceSelect">Giọng đọc: </label>
+              <select id="numVoiceSelect" class="voice-select" onchange="onChangeVoiceSelect(this.value, true)"></select>
+            </div>
+            <div class="toggle-chips">
+              <label class="toggle-label"><input type="checkbox" id="numMechSoundToggle" checked onchange="syncMechSoundToggle(this.checked)" /> ⌨️ Phím cơ</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="num-prompt-hint">
+          <span>💡 Dạng câu hỏi: <strong id="numTypeHintText">Đang tạo câu hỏi...</strong></span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);" id="numFormatExample">Gõ số tự nhiên, hệ thống tự chuẩn hóa ký hiệu</span>
+        </div>
+
+        <input id="numUserInput" type="text" class="num-input-field" autocomplete="off" placeholder="Nghe và gõ số bạn nghe được..." />
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="checkNumberAnswer()">✓ Kiểm tra (Enter)</button>
+          <button class="btn" id="numToggleAnswerBtn" onclick="toggleNumberAnswerReveal()">👁️ Xem đáp án</button>
+          <button class="btn" onclick="nextNumberQuestion()">Câu tiếp theo →</button>
+        </div>
+
+        <div id="numAnswerRevealBox" class="answer-reveal-box">
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Đáp án chuẩn & Cách đọc tiếng Anh:</div>
+          <div id="numAnswerRevealText" style="font-size: 1.25rem; font-weight: 800; color: var(--primary);"></div>
+          <div id="numAnswerSpokenText" class="num-spoken-text"></div>
+          <div id="numAnswerNoteText" style="font-size: 0.82rem; color: #cbd5e1; margin-top: 4px;"></div>
+        </div>
+
+        <div id="numFeedbackArea" class="feedback-area"></div>
+
+        <div class="shortcut-hint" id="numShortcutHintText">
+          Phím tắt: <kbd>Tab</kbd> hoặc <kbd>Ctrl</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu mới
+        </div>
+      </div>
     </div>
   </section>
 
@@ -848,6 +995,7 @@
     }
     document.getElementById('homeView').classList.add('hidden');
     document.getElementById('practiceView').classList.add('hidden');
+    document.getElementById('numberPracticeView').classList.add('hidden');
     document.getElementById('adminView').classList.remove('hidden');
 
     if (adminUnsubscribe) adminUnsubscribe();
@@ -1044,16 +1192,37 @@
   function loadVoices() {
     if (!window.speechSynthesis) return;
     voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-    const select = document.getElementById('voiceSelect');
-    if (!select) return;
-    select.innerHTML = '';
-    if (voices.length === 0) {
-      const opt = document.createElement('option'); opt.textContent = 'Mặc định trình duyệt (English)'; select.appendChild(opt); return;
-    }
+    const selects = [document.getElementById('voiceSelect'), document.getElementById('numVoiceSelect')].filter(Boolean);
+    if (selects.length === 0) return;
     voices.sort((a, b) => ((b.name.includes('Google') ? 3 : 0) + (b.name.includes('Natural') ? 2 : 0)) - ((a.name.includes('Google') ? 3 : 0) + (a.name.includes('Natural') ? 2 : 0)));
-    voices.forEach((v, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${v.name} (${v.lang})`; select.appendChild(opt); });
+    selects.forEach(select => {
+      const prevVal = select.value;
+      select.innerHTML = '';
+      if (voices.length === 0) {
+        const opt = document.createElement('option'); opt.textContent = 'Mặc định trình duyệt (English)'; select.appendChild(opt);
+      } else {
+        voices.forEach((v, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.textContent = `${v.name} (${v.lang})`; select.appendChild(opt); });
+        if (prevVal && voices[prevVal]) select.value = prevVal;
+      }
+    });
   }
   if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = loadVoices; loadVoices(); }
+
+  function onChangeVoiceSelect(val, isNumberView = false) {
+    const v1 = document.getElementById('voiceSelect');
+    const v2 = document.getElementById('numVoiceSelect');
+    if (v1) v1.value = val;
+    if (v2) v2.value = val;
+    if (isNumberView) speakCurrentNumber();
+    else speakCurrent();
+  }
+
+  function syncMechSoundToggle(checked) {
+    const t1 = document.getElementById('mechSoundToggle');
+    const t2 = document.getElementById('numMechSoundToggle');
+    if (t1) t1.checked = checked;
+    if (t2) t2.checked = checked;
+  }
 
   function updateHeaderStats() {
     document.getElementById('streakCount').textContent = streak;
@@ -1131,11 +1300,16 @@
   if (hintEl && isMacOS) {
     hintEl.innerHTML = 'Phím tắt Mac: <kbd>Tab</kbd> hoặc <kbd>Option</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu &nbsp;|&nbsp; <kbd>Option</kbd>+<kbd>H</kbd> Gợi ý';
   }
+  const numHintEl = document.getElementById('numShortcutHintText');
+  if (numHintEl && isMacOS) {
+    numHintEl.innerHTML = 'Phím tắt Mac: <kbd>Tab</kbd> hoặc <kbd>Option</kbd>+<kbd>Space</kbd> Nghe lại &nbsp;|&nbsp; <kbd>Enter</kbd> Kiểm tra / Qua câu mới';
+  }
 
   window.addEventListener('popstate', () => {
     const inPractice = !document.getElementById('practiceView').classList.contains('hidden');
     const inAdmin = !document.getElementById('adminView').classList.contains('hidden');
-    if (inPractice || inAdmin) {
+    const inNumber = !document.getElementById('numberPracticeView').classList.contains('hidden');
+    if (inPractice || inAdmin || inNumber) {
       goHome(true);
     }
   });
@@ -1155,6 +1329,7 @@
     }
     document.getElementById('homeView').classList.add('hidden');
     document.getElementById('adminView').classList.add('hidden');
+    document.getElementById('numberPracticeView').classList.add('hidden');
     document.getElementById('practiceView').classList.remove('hidden');
     document.getElementById('lessonTitleHeader').textContent = lesson.title;
     syncProgressToCloud({ lastLessonTitle: lesson.title });
@@ -1178,6 +1353,7 @@
     }
     document.getElementById('practiceView').classList.add('hidden');
     document.getElementById('adminView').classList.add('hidden');
+    document.getElementById('numberPracticeView').classList.add('hidden');
     document.getElementById('homeView').classList.remove('hidden');
     ALL_LESSONS = buildAllLessons();
     renderLessons();
@@ -1275,9 +1451,13 @@
 
   function setSpeed(rate, btn) {
     speechRate = rate;
-    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    speakCurrent();
+    document.querySelectorAll('.speed-btn').forEach(b => {
+      const bRate = parseFloat(b.getAttribute('data-rate'));
+      b.classList.toggle('active', bRate === rate);
+    });
+    const inNumber = !document.getElementById('numberPracticeView').classList.contains('hidden');
+    if (inNumber) speakCurrentNumber();
+    else speakCurrent();
   }
 
   function speakText(text) {
@@ -1287,10 +1467,10 @@
     utter.lang = 'en-US'; utter.rate = speechRate; utter.volume = 1.0;
     const voiceIdx = document.getElementById('voiceSelect').value;
     if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
-    const wave = document.getElementById('waveBars');
-    utter.onstart = () => wave && wave.classList.add('speaking');
-    utter.onend = () => wave && wave.classList.remove('speaking');
-    utter.onerror = () => wave && wave.classList.remove('speaking');
+    const waves = [document.getElementById('waveBars'), document.getElementById('numWaveBars')].filter(Boolean);
+    utter.onstart = () => waves.forEach(w => w.classList.add('speaking'));
+    utter.onend = () => waves.forEach(w => w.classList.remove('speaking'));
+    utter.onerror = () => waves.forEach(w => w.classList.remove('speaking'));
     window.speechSynthesis.speak(utter);
   }
 
@@ -1472,9 +1652,27 @@
     if (document.getElementById('mechSoundToggle').checked) playTone('key');
   });
 
+  document.getElementById('numUserInput').addEventListener('input', () => {
+    if (document.getElementById('numMechSoundToggle').checked) playTone('key');
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (document.getElementById('practiceView').classList.contains('hidden')) return;
+    const inPractice = !document.getElementById('practiceView').classList.contains('hidden');
+    const inNumber = !document.getElementById('numberPracticeView').classList.contains('hidden');
+    if (!inPractice && !inNumber) return;
     if (document.activeElement && document.activeElement.classList.contains('nb-note-input')) return;
+
+    if (inNumber) {
+      if (e.key === 'Tab' || ((e.ctrlKey || e.altKey) && e.code === 'Space')) {
+        e.preventDefault();
+        speakCurrentNumber();
+      } else if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        numJustCheckedCorrect ? nextNumberQuestion() : checkNumberAnswer();
+      }
+      return;
+    }
+
     if (e.key === 'Tab' || ((e.ctrlKey || e.altKey) && e.code === 'Space')) {
       e.preventDefault();
       speakCurrent();
@@ -1486,6 +1684,639 @@
       justCheckedCorrect ? nextItem() : checkAnswer();
     }
   });
+
+  // --- NUMBER LISTENING PRACTICE MODULE (50 QUESTIONS PER PART) ---
+  const NUMBER_SET_SIZE = 50;
+  let currentNumberMode = 'ALL';
+  let currentNumberList = [];
+  let currentNumberIdx = 0;
+  let currentNumberQuestion = null;
+  let numJustCheckedCorrect = false;
+  let numIsAnswerRevealed = false;
+  let numSessionCorrect = 0;
+  let numSessionTotal = 0;
+  let numSessionStreak = 0;
+  let numAttemptedThisQuestion = false;
+
+  const NUM_ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const NUM_TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+  function intToEnglishWords(n) {
+    n = Math.floor(Number(n));
+    if (n === 0) return 'zero';
+    if (n < 20) return NUM_ONES[n];
+    if (n < 100) {
+      const t = Math.floor(n / 10), r = n % 10;
+      return NUM_TENS[t] + (r ? '-' + NUM_ONES[r] : '');
+    }
+    if (n < 1000) {
+      const h = Math.floor(n / 100), r = n % 100;
+      return NUM_ONES[h] + ' hundred' + (r ? ' and ' + intToEnglishWords(r) : '');
+    }
+    if (n < 1000000) {
+      const th = Math.floor(n / 1000), r = n % 1000;
+      return intToEnglishWords(th) + ' thousand' + (r ? (r < 100 ? ' and ' : ', ') + intToEnglishWords(r) : '');
+    }
+    const m = Math.floor(n / 1000000), r = n % 1000000;
+    return intToEnglishWords(m) + ' million' + (r ? ', ' + intToEnglishWords(r) : '');
+  }
+
+  function yearToEnglishWords(y) {
+    if (y === 2000) return 'two thousand';
+    if (y > 2000 && y < 2010) return 'two thousand and ' + NUM_ONES[y % 100];
+    const firstTwo = Math.floor(y / 100);
+    const lastTwo = y % 100;
+    if (lastTwo === 0) return intToEnglishWords(firstTwo) + ' hundred';
+    if (lastTwo < 10) return intToEnglishWords(firstTwo) + ' oh ' + NUM_ONES[lastTwo];
+    return intToEnglishWords(firstTwo) + ' ' + intToEnglishWords(lastTwo);
+  }
+
+  function generateTeenTyQuestion(indexInSet = -1) {
+    const pairs = [
+      { teen: 13, teenWord: 'thirteen', ty: 30, tyWord: 'thirty', pairLabel: '13 vs 30' },
+      { teen: 14, teenWord: 'fourteen', ty: 40, tyWord: 'forty', pairLabel: '14 vs 40' },
+      { teen: 15, teenWord: 'fifteen', ty: 50, tyWord: 'fifty', pairLabel: '15 vs 50' },
+      { teen: 16, teenWord: 'sixteen', ty: 60, tyWord: 'sixty', pairLabel: '16 vs 60' },
+      { teen: 17, teenWord: 'seventeen', ty: 70, tyWord: 'seventy', pairLabel: '17 vs 70' },
+      { teen: 18, teenWord: 'eighteen', ty: 80, tyWord: 'eighty', pairLabel: '18 vs 80' },
+      { teen: 19, teenWord: 'nineteen', ty: 90, tyWord: 'ninety', pairLabel: '19 vs 90' }
+    ];
+    // Đảm bảo rải đều tất cả 14 số (13..19 và 30..90) trong bộ 50 câu
+    let p, isTeen;
+    if (indexInSet >= 0) {
+      const slot = indexInSet % 14;
+      p = pairs[Math.floor(slot / 2)];
+      isTeen = (slot % 2 === 0);
+    } else {
+      p = pairs[Math.floor(Math.random() * pairs.length)];
+      isTeen = Math.random() < 0.5;
+    }
+    const val = isTeen ? p.teen : p.ty;
+    const word = isTeen ? p.teenWord : p.tyWord;
+    const note = isTeen
+      ? `Đuôi "-teen" (${word}) nhấn trọng âm vào âm tiết thứ 2 kéo dài.`
+      : `Đuôi "-ty" (${word}) nhấn trọng âm vào âm tiết đầu, âm "-ty" đọc ngắn và nhẹ.`;
+    return {
+      mode: 'TEEN_TY',
+      categoryLabel: '🔄 Cặp dễ nhầm (-teen vs -ty)',
+      hint: `Phân biệt cặp số dễ nhầm (${p.pairLabel})`,
+      formatExample: 'Ví dụ gõ: 14 hoặc 40',
+      displayAnswer: String(val),
+      spokenText: word,
+      spokenExplanation: `"${word}" — ${note}`,
+      acceptedNorms: [String(val), word]
+    };
+  }
+
+  function chunkToSpokenPhone(chunkStr) {
+    const digitWords = ['oh', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+    const parts = [];
+    let i = 0;
+    while (i < chunkStr.length) {
+      const d = Number(chunkStr[i]);
+      if (i + 1 < chunkStr.length && chunkStr[i + 1] === chunkStr[i]) {
+        parts.push('double ' + digitWords[d]);
+        i += 2;
+      } else {
+        parts.push(digitWords[d]);
+        i++;
+      }
+    }
+    return parts.join(' ');
+  }
+
+  function generatePhoneQuestion() {
+    const isTenDigits = Math.random() < 0.65;
+    const len = isTenDigits ? 10 : 9;
+    let digits = ['0'];
+    const prefixes = ['9', '8', '7', '3', '2'];
+    digits.push(prefixes[Math.floor(Math.random() * prefixes.length)]);
+    while (digits.length < len) {
+      const r = Math.random();
+      if (r < 0.22 && digits.length >= 2 && digits[digits.length - 1] !== digits[digits.length - 2]) {
+        digits.push(digits[digits.length - 1]); // Tạo cặp double
+      } else if (r < 0.38) {
+        digits.push('0'); // Tạo số 0 ("oh")
+      } else {
+        digits.push(String(Math.floor(Math.random() * 10)));
+      }
+    }
+    const raw = digits.join('');
+    let chunks;
+    if (len === 10) {
+      chunks = [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 10)];
+    } else {
+      chunks = [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 9)];
+    }
+    const display = chunks.join(' ');
+    const spokenChunks = chunks.map(chunkToSpokenPhone);
+    const spokenText = spokenChunks.join(', ');
+    return {
+      mode: 'PHONE',
+      categoryLabel: '📞 Số điện thoại',
+      hint: `Số điện thoại (${len} chữ số, đọc theo cụm tự nhiên có "oh" & "double")`,
+      formatExample: 'Ví dụ gõ: 0987654321 hoặc 098 765 4321',
+      displayAnswer: display,
+      spokenText,
+      spokenExplanation: `"${spokenChunks.join(' — ')}" ("oh" = 0, "double" = lặp 2 số giống nhau)`,
+      acceptedNorms: [raw]
+    };
+  }
+
+  function generatePriceQuestion() {
+    const currency = Math.random() < 0.6 ? '$' : '£';
+    const currName = currency === '$' ? 'dollars' : 'pounds';
+    const isLargeWhole = Math.random() < 0.35;
+    let displayAnswer, spokenText, acceptedNorms;
+
+    if (isLargeWhole) {
+      const hundreds = [
+        120, 150, 185, 230, 250, 310, 375, 420, 480, 560, 640, 750, 830, 920,
+        1050, 1180, 1250, 1390, 1450, 1620, 1800, 2150, 2350, 2780, 3200, 3500, 4150, 4950, 5600, 6800
+      ];
+      const amount = hundreds[Math.floor(Math.random() * hundreds.length)];
+      const formatted = amount.toLocaleString('en-US');
+      displayAnswer = `${currency}${formatted}`;
+      spokenText = `${intToEnglishWords(amount)} ${currName}`;
+      acceptedNorms = [String(amount), `${amount}.00`, `${amount}00`];
+    } else {
+      const wholePool = [
+        3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 24, 27, 30, 32,
+        35, 38, 40, 45, 49, 50, 55, 60, 68, 70, 75, 80, 89, 90, 95, 115, 140, 240
+      ];
+      const centsPool = [10, 15, 20, 25, 30, 35, 40, 45, 49, 50, 60, 65, 70, 75, 80, 85, 90, 95, 99];
+      const whole = wholePool[Math.floor(Math.random() * wholePool.length)];
+      const cents = centsPool[Math.floor(Math.random() * centsPool.length)];
+      const centsStr = String(cents).padStart(2, '0');
+      displayAnswer = `${currency}${whole}.${centsStr}`;
+      const shortStyle = Math.random() < 0.5;
+      if (shortStyle) {
+        spokenText = `${intToEnglishWords(whole)} ${currName} ${intToEnglishWords(cents)}`;
+      } else {
+        const subName = currency === '$' ? 'cents' : 'pence';
+        spokenText = `${intToEnglishWords(whole)} ${currName} and ${intToEnglishWords(cents)} ${subName}`;
+      }
+      acceptedNorms = [`${whole}.${centsStr}`, `${whole}.${cents}`, `${whole}${centsStr}`];
+    }
+
+    return {
+      mode: 'PRICE',
+      categoryLabel: '💰 Giá tiền',
+      hint: `Giá tiền (${currency === '$' ? 'Đô la Mỹ $' : 'Bảng Anh £'})`,
+      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${displayAnswer.replace(/[$,£]/g, '')}`,
+      displayAnswer,
+      spokenText,
+      spokenExplanation: `"${spokenText}"`,
+      acceptedNorms
+    };
+  }
+
+  function generateDateQuestion() {
+    const months = [
+      { num: 1, name: 'January', short: 'jan' },
+      { num: 2, name: 'February', short: 'feb' },
+      { num: 3, name: 'March', short: 'mar' },
+      { num: 4, name: 'April', short: 'apr' },
+      { num: 5, name: 'May', short: 'may' },
+      { num: 6, name: 'June', short: 'jun' },
+      { num: 7, name: 'July', short: 'jul' },
+      { num: 8, name: 'August', short: 'aug' },
+      { num: 9, name: 'September', short: 'sep' },
+      { num: 10, name: 'October', short: 'oct' },
+      { num: 11, name: 'November', short: 'nov' },
+      { num: 12, name: 'December', short: 'dec' }
+    ];
+    const ordinals = {
+      1: ['1st', 'first'], 2: ['2nd', 'second'], 3: ['3rd', 'third'], 4: ['4th', 'fourth'],
+      5: ['5th', 'fifth'], 6: ['6th', 'sixth'], 7: ['7th', 'seventh'], 8: ['8th', 'eighth'],
+      9: ['9th', 'ninth'], 10: ['10th', 'tenth'], 11: ['11th', 'eleventh'], 12: ['12th', 'twelfth'],
+      13: ['13th', 'thirteenth'], 14: ['14th', 'fourteenth'], 15: ['15th', 'fifteenth'],
+      16: ['16th', 'sixteenth'], 17: ['17th', 'seventeenth'], 18: ['18th', 'eighteenth'],
+      19: ['19th', 'nineteenth'], 20: ['20th', 'twentieth'], 21: ['21st', 'twenty-first'],
+      22: ['22nd', 'twenty-second'], 23: ['23rd', 'twenty-third'], 24: ['24th', 'twenty-fourth'],
+      25: ['25th', 'twenty-fifth'], 26: ['26th', 'twenty-sixth'], 27: ['27th', 'twenty-seventh'],
+      28: ['28th', 'twenty-eighth'], 29: ['29th', 'twenty-ninth'], 30: ['30th', 'thirtieth'], 31: ['31st', 'thirty-first']
+    };
+    const days = Object.keys(ordinals).map(Number);
+    const m = months[Math.floor(Math.random() * months.length)];
+    let day = days[Math.floor(Math.random() * days.length)];
+    if (m.num === 2 && day > 28) day = 28;
+    if ([4, 6, 9, 11].includes(m.num) && day > 30) day = 30;
+    const years = [
+      1975, 1982, 1985, 1988, 1990, 1992, 1994, 1996, 1998, 1999,
+      2000, 2002, 2004, 2006, 2008, 2010, 2012, 2014, 2015, 2017, 2019, 2020, 2021, 2023, 2024, 2025, 2026, 2030
+    ];
+    const year = years[Math.floor(Math.random() * years.length)];
+    const [ordShort, ordWord] = ordinals[day];
+    const yearWord = yearToEnglishWords(year);
+
+    const ukStyle = Math.random() < 0.6;
+    const spokenText = ukStyle
+      ? `the ${ordWord} of ${m.name}, ${yearWord}`
+      : `${m.name} the ${ordWord}, ${yearWord}`;
+    const displayAnswer = `${ordShort} ${m.name} ${year}`;
+
+    return {
+      mode: 'DATE',
+      categoryLabel: '📅 Ngày tháng & Năm',
+      hint: 'Ngày tháng & Năm (Chấp nhận gõ chữ hoặc số ngày/tháng/năm)',
+      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${day}/${m.num}/${year}`,
+      displayAnswer,
+      spokenText,
+      spokenExplanation: `"${spokenText}"`,
+      dateMeta: { day, monthNum: m.num, monthName: m.name.toLowerCase(), monthShort: m.short, year, ordShort: ordShort.toLowerCase() }
+    };
+  }
+
+  function generateTimeQuestion() {
+    const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const h = hours[Math.floor(Math.random() * hours.length)];
+    const nextH = (h % 12) + 1;
+    const patterns = [
+      { m: 0, style: 'oclock', spoken: `${NUM_ONES[h]} o'clock` },
+      { m: 5, style: 'five_past', spoken: `five past ${NUM_ONES[h]}` },
+      { m: 5, style: 'digital', spoken: `${NUM_ONES[h]} oh five` },
+      { m: 10, style: 'ten_past', spoken: `ten past ${NUM_ONES[h]}` },
+      { m: 10, style: 'digital', spoken: `${NUM_ONES[h]} ten` },
+      { m: 15, style: 'quarter_past', spoken: `a quarter past ${NUM_ONES[h]}` },
+      { m: 15, style: 'digital', spoken: `${NUM_ONES[h]} fifteen` },
+      { m: 20, style: 'twenty_past', spoken: `twenty past ${NUM_ONES[h]}` },
+      { m: 20, style: 'digital', spoken: `${NUM_ONES[h]} twenty` },
+      { m: 25, style: 'twenty_five_past', spoken: `twenty-five past ${NUM_ONES[h]}` },
+      { m: 30, style: 'half_past', spoken: `half past ${NUM_ONES[h]}` },
+      { m: 30, style: 'digital', spoken: `${NUM_ONES[h]} thirty` },
+      { m: 35, style: 'twenty_five_to', spoken: `twenty-five to ${NUM_ONES[nextH]}` },
+      { m: 35, style: 'digital', spoken: `${NUM_ONES[h]} thirty-five` },
+      { m: 40, style: 'twenty_to', spoken: `twenty to ${NUM_ONES[nextH]}` },
+      { m: 40, style: 'digital', spoken: `${NUM_ONES[h]} forty` },
+      { m: 45, style: 'quarter_to', spoken: `a quarter to ${NUM_ONES[nextH]}` },
+      { m: 45, style: 'digital', spoken: `${NUM_ONES[h]} forty-five` },
+      { m: 50, style: 'ten_to', spoken: `ten to ${NUM_ONES[nextH]}` },
+      { m: 50, style: 'digital', spoken: `${NUM_ONES[h]} fifty` },
+      { m: 55, style: 'five_to', spoken: `five to ${NUM_ONES[nextH]}` }
+    ];
+    const picked = patterns[Math.floor(Math.random() * patterns.length)];
+    const mStr = String(picked.m).padStart(2, '0');
+    const displayAnswer = `${h}:${mStr}`;
+    return {
+      mode: 'TIME',
+      categoryLabel: '⏰ Giờ giấc',
+      hint: 'Giờ giấc (Đổi sang dạng số Giờ:Phút)',
+      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${String(h).padStart(2, '0')}:${mStr}`,
+      displayAnswer,
+      spokenText: picked.spoken,
+      spokenExplanation: `"${picked.spoken}" → ${displayAnswer}`,
+      timeMeta: { h, m: picked.m, spoken: picked.spoken.toLowerCase() }
+    };
+  }
+
+  function generateLargePctQuestion() {
+    const subTypes = ['THOUSAND', 'MILLION', 'PERCENT'];
+    const sub = subTypes[Math.floor(Math.random() * subTypes.length)];
+
+    if (sub === 'THOUSAND') {
+      const pool = [
+        1250, 1840, 2350, 3400, 4750, 5800, 6920, 8450, 9600,
+        12450, 15600, 18900, 24800, 32500, 45200, 48500, 64300, 75200, 89400,
+        125000, 180000, 245000, 350000, 480000, 650000, 820000
+      ];
+      const val = pool[Math.floor(Math.random() * pool.length)];
+      const displayAnswer = val.toLocaleString('en-US');
+      const spokenText = intToEnglishWords(val);
+      return {
+        mode: 'LARGE_PCT',
+        categoryLabel: '📈 Số lớn & Phần trăm',
+        hint: 'Số lớn hàng nghìn / trăm nghìn',
+        formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${val}`,
+        displayAnswer,
+        spokenText,
+        spokenExplanation: `"${spokenText}"`,
+        acceptedNorms: [String(val)]
+      };
+    }
+
+    if (sub === 'MILLION') {
+      const pool = [
+        { whole: 1, dec: 2, val: 1200000 },
+        { whole: 1, dec: 5, val: 1500000 },
+        { whole: 1, dec: 8, val: 1800000 },
+        { whole: 2, dec: 4, val: 2400000 },
+        { whole: 2, dec: 7, val: 2700000 },
+        { whole: 3, dec: 5, val: 3500000 },
+        { whole: 4, dec: 2, val: 4200000 },
+        { whole: 4, dec: 8, val: 4800000 },
+        { whole: 5, dec: 6, val: 5600000 },
+        { whole: 6, dec: 2, val: 6200000 },
+        { whole: 7, dec: 5, val: 7500000 },
+        { whole: 8, dec: 4, val: 8400000 },
+        { whole: 9, dec: 5, val: 9500000 },
+        { whole: 12, dec: 5, val: 12500000 },
+        { whole: 15, dec: 4, val: 15400000 },
+        { whole: 24, dec: 5, val: 24500000 }
+      ];
+      const item = pool[Math.floor(Math.random() * pool.length)];
+      const displayAnswer = `${item.whole}.${item.dec} million`;
+      const spokenText = `${intToEnglishWords(item.whole)} point ${NUM_ONES[item.dec]} million`;
+      return {
+        mode: 'LARGE_PCT',
+        categoryLabel: '📈 Số lớn & Phần trăm',
+        hint: 'Số hàng triệu (Có thể gõ "3.5 million", "3.5m" hoặc viết đủ số 0)',
+        formatExample: `Ví dụ gõ: ${displayAnswer}, ${item.whole}.${item.dec}m hoặc ${item.val}`,
+        displayAnswer,
+        spokenText,
+        spokenExplanation: `"${spokenText}"`,
+        acceptedNorms: [
+          `${item.whole}.${item.dec}million`,
+          `${item.whole}.${item.dec}m`,
+          String(item.val)
+        ]
+      };
+    }
+
+    // PERCENT
+    const pool = [
+      { whole: 4, dec: 5 }, { whole: 7, dec: 2 }, { whole: 12, dec: 5 }, { whole: 13, dec: 8 },
+      { whole: 15, dec: 8 }, { whole: 18, dec: 0 }, { whole: 22, dec: 4 }, { whole: 24, dec: 5 },
+      { whole: 30, dec: 5 }, { whole: 33, dec: 3 }, { whole: 38, dec: 6 }, { whole: 42, dec: 5 },
+      { whole: 47, dec: 5 }, { whole: 54, dec: 2 }, { whole: 60, dec: 0 }, { whole: 65, dec: 5 },
+      { whole: 68, dec: 2 }, { whole: 72, dec: 8 }, { whole: 75, dec: 5 }, { whole: 80, dec: 0 },
+      { whole: 84, dec: 6 }, { whole: 92, dec: 4 }, { whole: 98, dec: 5 }
+    ];
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    const hasDec = item.dec > 0;
+    const numStr = hasDec ? `${item.whole}.${item.dec}` : `${item.whole}`;
+    const displayAnswer = `${numStr}%`;
+    const spokenText = hasDec
+      ? `${intToEnglishWords(item.whole)} point ${NUM_ONES[item.dec]} percent`
+      : `${intToEnglishWords(item.whole)} percent`;
+    return {
+      mode: 'LARGE_PCT',
+      categoryLabel: '📈 Số lớn & Phần trăm',
+      hint: 'Số thập phân & Phần trăm (%)',
+      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${numStr}`,
+      displayAnswer,
+      spokenText,
+      spokenExplanation: `"${spokenText}"`,
+      acceptedNorms: [numStr, `${numStr}%`, `${numStr}percent`]
+    };
+  }
+
+  function generateSingleNumberQuestion(mode, idx = -1) {
+    const modes = ['TEEN_TY', 'PHONE', 'PRICE', 'DATE', 'TIME', 'LARGE_PCT'];
+    const targetMode = (mode === 'ALL' || !modes.includes(mode))
+      ? modes[idx >= 0 ? (idx % modes.length) : Math.floor(Math.random() * modes.length)]
+      : mode;
+
+    switch (targetMode) {
+      case 'TEEN_TY': return generateTeenTyQuestion(idx);
+      case 'PHONE': return generatePhoneQuestion();
+      case 'PRICE': return generatePriceQuestion();
+      case 'DATE': return generateDateQuestion();
+      case 'TIME': return generateTimeQuestion();
+      case 'LARGE_PCT': return generateLargePctQuestion();
+      default: return generateTeenTyQuestion(idx);
+    }
+  }
+
+  // Tạo bộ đúng 50 câu cho phần được chọn, ưu tiên không trùng lặp câu liên tiếp
+  function build50NumberQuestions(mode) {
+    const list = [];
+    const seenSpoken = new Set();
+    for (let i = 0; i < NUMBER_SET_SIZE; i++) {
+      let q = null;
+      for (let attempt = 0; attempt < 25; attempt++) {
+        const candidate = generateSingleNumberQuestion(mode, i + attempt);
+        if (!seenSpoken.has(candidate.spokenText) || mode === 'TEEN_TY') {
+          q = candidate;
+          break;
+        }
+      }
+      if (!q) q = generateSingleNumberQuestion(mode, i);
+      seenSpoken.add(q.spokenText);
+      list.push(q);
+    }
+    // Xáo trộn thứ tự trong 50 câu và tránh 2 câu giống nhau đứng sát nhau
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    for (let i = 1; i < list.length; i++) {
+      if (list[i].displayAnswer === list[i - 1].displayAnswer) {
+        const swapIdx = (i + 3) % list.length;
+        [list[i], list[swapIdx]] = [list[swapIdx], list[i]];
+      }
+    }
+    return list;
+  }
+
+  function isNumberAnswerCorrect(userRaw, q) {
+    if (!userRaw || !userRaw.trim()) return false;
+    const rawLower = userRaw.toLowerCase().trim();
+
+    if (q.mode === 'DATE' && q.dateMeta) {
+      const { day, monthNum, monthName, monthShort, year, ordShort } = q.dateMeta;
+      const dPad = String(day).padStart(2, '0');
+      const mPad = String(monthNum).padStart(2, '0');
+      const cleaned = rawLower.replace(/[,.\-\/]+/g, ' ').replace(/\b(the|of)\b/g, ' ').replace(/\s+/g, ' ').trim();
+      const validDates = new Set([
+        `${day} ${monthName} ${year}`,
+        `${ordShort} ${monthName} ${year}`,
+        `${day} ${monthShort} ${year}`,
+        `${ordShort} ${monthShort} ${year}`,
+        `${monthName} ${day} ${year}`,
+        `${monthName} ${ordShort} ${year}`,
+        `${monthShort} ${day} ${year}`,
+        `${monthShort} ${ordShort} ${year}`,
+        `${day} ${monthNum} ${year}`,
+        `${dPad} ${mPad} ${year}`,
+        `${monthNum} ${day} ${year}`,
+        `${mPad} ${dPad} ${year}`,
+        `${day}${monthName}${year}`,
+        `${ordShort}${monthName}${year}`,
+        `${dPad}${mPad}${year}`,
+        `${day}${monthNum}${year}`
+      ]);
+      const noSpace = cleaned.replace(/\s+/g, '');
+      return validDates.has(cleaned) || validDates.has(noSpace);
+    }
+
+    if (q.mode === 'TIME' && q.timeMeta) {
+      const { h, m, spoken } = q.timeMeta;
+      const mPad = String(m).padStart(2, '0');
+      const hPad = String(h).padStart(2, '0');
+      const cleaned = rawLower.replace(/\s+/g, '').replace(/[h.]/g, ':');
+      const validTimes = new Set([
+        `${h}:${mPad}`,
+        `${hPad}:${mPad}`,
+        `${h}${mPad}`,
+        `${hPad}${mPad}`,
+        spoken.replace(/[\s\-']+?/g, '')
+      ]);
+      return validTimes.has(cleaned);
+    }
+
+    // Chuẩn hóa chung: bỏ khoảng trắng, dấu gạch ngang, dấu phẩy ngăn nghìn, ký hiệu tiền tệ $/£, dấu %
+    const normUser = rawLower.replace(/[\s,\-$£]/g, '');
+    const normUserNoPct = normUser.replace(/%|percent/g, '');
+    return (q.acceptedNorms || []).some(acc => {
+      const normAcc = acc.toLowerCase().replace(/[\s,\-$£]/g, '');
+      const normAccNoPct = normAcc.replace(/%|percent/g, '');
+      return normUser === normAcc || normUserNoPct === normAccNoPct;
+    });
+  }
+
+  function startNumberModeSet(mode) {
+    currentNumberMode = mode;
+    currentNumberList = build50NumberQuestions(mode);
+    currentNumberIdx = 0;
+    numSessionCorrect = 0;
+    numSessionTotal = 0;
+    numSessionStreak = 0;
+    updateNumberStatsUI();
+    loadCurrentNumberQuestion();
+  }
+
+  function openNumberPractice() {
+    if (location.hash !== '#numbers') {
+      history.pushState({ view: 'numbers' }, '', '#numbers');
+    }
+    document.getElementById('homeView').classList.add('hidden');
+    document.getElementById('practiceView').classList.add('hidden');
+    document.getElementById('adminView').classList.add('hidden');
+    document.getElementById('numberPracticeView').classList.remove('hidden');
+
+    loadVoices();
+    const v1 = document.getElementById('voiceSelect');
+    const v2 = document.getElementById('numVoiceSelect');
+    if (v1 && v2 && v1.value) v2.value = v1.value;
+
+    startNumberModeSet(currentNumberMode);
+  }
+
+  function setNumberMode(mode, btn) {
+    document.querySelectorAll('#numModeBar .num-mode-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    startNumberModeSet(mode);
+  }
+
+  function updateNumberStatsUI() {
+    document.getElementById('numStatCorrect').textContent = numSessionCorrect;
+    document.getElementById('numStatTotal').textContent = `${numSessionTotal} / ${NUMBER_SET_SIZE}`;
+    document.getElementById('numStatStreak').textContent = numSessionStreak;
+  }
+
+  function loadCurrentNumberQuestion() {
+    if (!currentNumberList || currentNumberList.length === 0) {
+      currentNumberList = build50NumberQuestions(currentNumberMode);
+      currentNumberIdx = 0;
+    }
+    currentNumberQuestion = currentNumberList[currentNumberIdx];
+    numJustCheckedCorrect = false;
+    numIsAnswerRevealed = false;
+    numAttemptedThisQuestion = false;
+    updateNumberAnswerRevealUI();
+
+    document.getElementById('numItemCounter').textContent = `Câu ${currentNumberIdx + 1} / ${ currentNumberList.length }`;
+    document.getElementById('numCategoryBadge').textContent = currentNumberQuestion.categoryLabel;
+    document.getElementById('numTypeHintText').textContent = currentNumberQuestion.hint;
+    document.getElementById('numFormatExample').textContent = currentNumberQuestion.formatExample;
+    const inp = document.getElementById('numUserInput');
+    inp.value = '';
+    document.getElementById('numFeedbackArea').style.display = 'none';
+    document.getElementById('numPracticeCardBox').classList.remove('glow-ok', 'shake-err');
+    inp.focus();
+
+    setTimeout(() => speakCurrentNumber(), 220);
+  }
+
+  function nextNumberQuestion() {
+    if (currentNumberIdx < currentNumberList.length - 1) {
+      currentNumberIdx++;
+      loadCurrentNumberQuestion();
+    } else {
+      launchConfetti();
+      alert(`🎉 Xuất sắc! Bạn đã hoàn thành trọn vẹn 50 câu nghe số của phần này (Đúng ${numSessionCorrect}/${NUMBER_SET_SIZE} câu)!\nHệ thống sẽ tạo bộ 50 câu mới để bạn luyện tiếp.`);
+      startNumberModeSet(currentNumberMode);
+    }
+  }
+
+  function speakCurrentNumber() {
+    if (currentNumberQuestion && currentNumberQuestion.spokenText) {
+      speakText(currentNumberQuestion.spokenText);
+    }
+  }
+
+  function toggleNumberAnswerReveal() {
+    numIsAnswerRevealed = !numIsAnswerRevealed;
+    updateNumberAnswerRevealUI();
+  }
+
+  function updateNumberAnswerRevealUI() {
+    const box = document.getElementById('numAnswerRevealBox');
+    const btn = document.getElementById('numToggleAnswerBtn');
+    if (numIsAnswerRevealed && currentNumberQuestion) {
+      document.getElementById('numAnswerRevealText').textContent = currentNumberQuestion.displayAnswer;
+      document.getElementById('numAnswerSpokenText').textContent = `🗣️ Cách đọc: ${currentNumberQuestion.spokenExplanation}`;
+      box.style.display = 'block';
+      btn.innerHTML = '🙈 Ẩn đáp án';
+      btn.classList.add('btn-warning');
+    } else {
+      box.style.display = 'none';
+      btn.innerHTML = '👁️ Xem đáp án';
+      btn.classList.remove('btn-warning');
+    }
+  }
+
+  function checkNumberAnswer() {
+    if (!currentNumberQuestion) return;
+    const userVal = document.getElementById('numUserInput').value;
+    const isOk = isNumberAnswerCorrect(userVal, currentNumberQuestion);
+    const feedback = document.getElementById('numFeedbackArea');
+    const cardBox = document.getElementById('numPracticeCardBox');
+    feedback.style.display = 'block';
+
+    cardBox.classList.remove('glow-ok', 'shake-err');
+    void cardBox.offsetWidth;
+
+    if (!numAttemptedThisQuestion) {
+      numSessionTotal++;
+      numAttemptedThisQuestion = true;
+    }
+
+    if (isOk) {
+      playTone('success');
+      if (!numJustCheckedCorrect) {
+        numSessionCorrect++;
+        numSessionStreak++;
+      }
+      numJustCheckedCorrect = true;
+      cardBox.classList.add('glow-ok');
+      triggerRandomSticker('correct', numSessionStreak);
+      feedback.innerHTML = `
+        <div style="color:#34d399; font-weight:800; font-size:1.05rem;">
+          🎉 Chính xác! (Câu ${currentNumberIdx + 1}/${currentNumberList.length}) — Đáp án chuẩn: <span style="color:var(--primary);">${currentNumberQuestion.displayAnswer}</span>
+        </div>
+        <div class="num-spoken-text">🗣️ Cách đọc: ${currentNumberQuestion.spokenExplanation}</div>
+        <div style="margin-top:6px; font-size:0.82rem; color:var(--text-muted);">Nhấn <kbd>Enter</kbd> để qua câu tiếp theo (${Math.min(currentNumberIdx + 2, currentNumberList.length)}/${currentNumberList.length}).</div>
+      `;
+    } else {
+      playTone('error');
+      numSessionStreak = 0;
+      numJustCheckedCorrect = false;
+      cardBox.classList.add('shake-err');
+      triggerRandomSticker('wrong', 0);
+      feedback.innerHTML = `
+        <div style="color:#f87171; font-weight:700;">
+          ⚠️ Chưa chính xác! Bạn vừa gõ: <span class="word-chip word-err">${userVal || '(trống)'}</span>
+        </div>
+        <div style="margin-top:6px; font-size:0.86rem; color:#cbd5e1;">
+          Hãy bấm <kbd>Tab</kbd> để nghe lại hoặc bấm <strong>"👁️ Xem đáp án"</strong> để đối chiếu cách đọc tiếng Anh nhé!
+        </div>
+      `;
+    }
+    updateNumberStatsUI();
+  }
 
   function openCustomModal() { document.getElementById('customModal').style.display = 'flex'; }
   function closeCustomModal() { document.getElementById('customModal').style.display = 'none'; }
