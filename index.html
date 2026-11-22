@@ -304,6 +304,128 @@
     .num-spoken-text {
       margin-top: 6px; font-size: 0.96rem; color: #fde047; font-style: italic; font-weight: 600;
     }
+
+    /* 1. SPEECH RECOGNITION MIC BUTTON */
+    .btn-mic {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff; border: none;
+    }
+    .btn-mic:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+    .btn-mic.recording {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      animation: micPulse 1.1s infinite ease-in-out;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.65); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+
+    /* 4. HOME ARENA: DAILY GOAL & TOP 5 LEADERBOARD */
+    .home-arena-grid {
+      display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px;
+      margin-bottom: 22px; text-align: left;
+    }
+    @media (max-width: 860px) { .home-arena-grid { grid-template-columns: 1fr; } }
+    .arena-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 18px 20px;
+      box-shadow: 0 10px 24px -10px rgba(0,0,0,0.45);
+    }
+    .arena-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; gap: 8px; flex-wrap: wrap;
+    }
+    .arena-card-title {
+      font-size: 1rem; font-weight: 800; color: #f8fafc;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .daily-progress-bar {
+      height: 12px; background: rgba(30, 41, 59, 0.9);
+      border-radius: 999px; overflow: hidden; margin: 10px 0 8px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .daily-progress-fill {
+      height: 100%; background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
+      border-radius: 999px; transition: width 0.35s ease;
+    }
+    .daily-goal-select {
+      background: rgba(15, 23, 42, 0.9); color: #f8fafc;
+      border: 1px solid var(--card-border); border-radius: 8px;
+      padding: 4px 8px; font-size: 0.78rem; font-weight: 600; font-family: inherit;
+    }
+    .lb-list { display: flex; flex-direction: column; gap: 7px; }
+    .lb-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(148, 163, 184, 0.12);
+      padding: 7px 12px; border-radius: 11px; font-size: 0.85rem;
+    }
+    .lb-row.is-me {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .lb-left { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .lb-medal { font-size: 1.05rem; width: 24px; text-align: center; font-weight: 800; flex-shrink: 0; }
+    .lb-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .lb-name { font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-score { font-weight: 800; color: #34d399; white-space: nowrap; font-size: 0.84rem; }
+
+    /* 5. PASSIVE PODCAST MODE BANNER */
+    .passive-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(236, 72, 153, 0.16));
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      border-radius: 12px; padding: 10px 14px; margin-bottom: 14px;
+      display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      font-size: 0.86rem; color: #fde68a;
+    }
+    .passive-banner.active { display: flex; }
+
+    /* 3. SPACED REPETITION FLASHCARD MODAL */
+    .flashcard-stage {
+      perspective: 1000px; margin: 14px 0 16px; cursor: pointer;
+    }
+    .flashcard-box {
+      min-height: 210px; background: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      border: 2px solid rgba(56, 189, 248, 0.38); border-radius: 18px;
+      padding: 26px 22px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      transition: transform 0.22s ease, border-color 0.22s ease;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    }
+    .flashcard-box:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .flashcard-box.is-flipped {
+      border-color: var(--success);
+      background: linear-gradient(145deg, rgba(6, 78, 59, 0.35), rgba(15, 23, 42, 0.98));
+    }
+    .fc-side-tag {
+      font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+      padding: 3px 10px; border-radius: 999px; margin-bottom: 12px;
+      background: rgba(56, 189, 248, 0.16); color: var(--primary);
+    }
+    .flashcard-box.is-flipped .fc-side-tag {
+      background: rgba(16, 185, 129, 0.2); color: #34d399;
+    }
+    .fc-main-text {
+      font-size: 1.32rem; font-weight: 800; color: #f8fafc; line-height: 1.45;
+    }
+    .fc-sub-text {
+      margin-top: 10px; font-size: 0.95rem; color: #fde047;
+    }
+    .fc-rate-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px;
+    }
+    @media (max-width: 520px) { .fc-rate-grid { grid-template-columns: 1fr; } }
+    .fc-rate-btn {
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--card-border);
+      font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;
+      display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.18s;
+    }
+    .fc-rate-btn:hover { transform: translateY(-2px); }
+    .fc-rate-hard { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.45); color: #fca5a5; }
+    .fc-rate-good { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.45); color: #fcd34d; }
+    .fc-rate-easy { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5); color: #6ee7b7; }
+
   </style>
 </head>
 <body>
@@ -356,7 +478,46 @@
       <div class="hero-actions">
         <button class="btn btn-primary" onclick="startRandomLesson()">🎲 Học ngẫu nhiên 1 bài bất kỳ</button>
         <button class="btn btn-number-hero" onclick="openNumberPractice()">🔢 Luyện nghe Số</button>
+        <button class="btn" onclick="openFlashcardModal()" id="homeFlashcardBtn">🧠 Flashcard Sổ tay (<span id="dueFlashcardCount">0</span>)</button>
         <button class="btn" onclick="openBgModal()">🖼️ Cài ảnh nền riêng</button>
+      </div>
+
+      <!-- DAILY GOAL & TOP 5 LEADERBOARD ARENA -->
+      <div class="home-arena-grid">
+        <div class="arena-card">
+          <div class="arena-card-header">
+            <div class="arena-card-title">🎯 Mục tiêu hôm nay</div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.78rem; color:var(--text-muted);">Chỉ tiêu:</span>
+              <select id="dailyTargetSelect" class="daily-goal-select" onchange="changeDailyTarget(this.value)">
+                <option value="10">10 câu/ngày</option>
+                <option value="20" selected>20 câu/ngày</option>
+                <option value="30">30 câu/ngày</option>
+                <option value="50">50 câu/ngày</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <div style="font-size:1.35rem; font-weight:800; color:var(--primary);" id="dailyProgressLabel">0 / 20 câu</div>
+            <div style="font-size:0.82rem; font-weight:700; color:#34d399;" id="dailyPctLabel">0%</div>
+          </div>
+          <div class="daily-progress-bar">
+            <div class="daily-progress-fill" id="dailyProgressFill" style="width:0%;"></div>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);" id="dailyMotivationText">
+            Hoàn thành mỗi câu nghe chép, luyện nói hoặc nghe số đều được tính vào mục tiêu ngày!
+          </div>
+        </div>
+
+        <div class="arena-card">
+          <div class="arena-card-header">
+            <div class="arena-card-title">🏆 Bảng Xếp Hạng Top 5 Học Viên</div>
+            <button class="btn btn-sm" onclick="loadHomeLeaderboard()">🔄 Làm mới</button>
+          </div>
+          <div id="homeLeaderboardList" class="lb-list">
+            <div style="font-size:0.83rem; color:var(--text-muted); text-align:center; padding:16px 0;">Đang tải bảng xếp hạng...</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -387,10 +548,18 @@
 
         <div class="audio-controls">
           <div class="audio-main-row">
-            <button class="play-btn-big" onclick="speakCurrent()">
-              <span>🔊 Nghe phát âm</span>
-              <span class="wave-bars" id="waveBars"><span></span><span></span><span></span></span>
-            </button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="play-btn-big" onclick="speakCurrent()">
+                <span>🔊 Nghe phát âm</span>
+                <span class="wave-bars" id="waveBars"><span></span><span></span><span></span></span>
+              </button>
+              <button class="play-btn-big btn-mic" id="micPracticeBtn" onclick="toggleSpeechRecognition()" title="Đọc lại câu mẫu để AI chấm phát âm">
+                <span>🎙️ Nói thử</span>
+              </button>
+              <button class="btn btn-warning" id="passivePlayBtn" onclick="togglePassivePodcast()" title="Tự động phát liên tục cả bài để nghe thụ động">
+                ▶️ Nghe thụ động
+              </button>
+            </div>
             <div class="speed-group">
               <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Tốc độ:</span>
               <button class="speed-btn" data-rate="0.5" onclick="setSpeed(0.5, this)">0.5x</button>
@@ -412,6 +581,18 @@
               <label class="toggle-label"><input type="checkbox" id="mechSoundToggle" checked onchange="syncMechSoundToggle(this.checked)" /> ⌨️ Phím cơ</label>
               <label class="toggle-label"><input type="checkbox" id="hideMeaningToggle" onchange="toggleMeaningVisibility()" /> 🙈 Ẩn nghĩa</label>
             </div>
+          </div>
+        </div>
+
+        <div class="passive-banner" id="passiveBanner">
+          <div>
+            <strong>🎧 Chế độ Nghe Thụ Động (Hands-free):</strong> <span id="passiveStatusText">Đang phát tự động...</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="cursor:pointer; font-size:0.8rem; display:inline-flex; align-items:center; gap:4px;">
+              <input type="checkbox" id="passiveRepeat2x" checked /> Đọc 2 lần/câu
+            </label>
+            <button class="btn btn-sm btn-danger" onclick="stopPassivePodcast()">⏹️ Dừng</button>
           </div>
         </div>
 
@@ -449,7 +630,10 @@
       <aside class="notebook-panel">
         <div class="notebook-header">
           <h3>📓 Sổ Tay Từ Vựng</h3>
-          <button class="btn btn-sm" onclick="copyNotebook()">📋 Copy bài</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm btn-primary" onclick="openFlashcardModal()" title="Ôn tập giãn cách Flashcard">🧠 Flashcard</button>
+            <button class="btn btn-sm" onclick="copyNotebook()">📋 Copy</button>
+          </div>
         </div>
         <div class="notebook-tabs">
           <div class="nb-tab active" id="tabCurrentLesson" onclick="switchNotebookTab('current')">Bài đang học (<span id="nbCurrentCount">0</span>)</div>
@@ -496,6 +680,7 @@
           <button class="num-mode-btn" data-mode="DATE" onclick="setNumberMode('DATE', this)">📅 Ngày tháng & Năm (50 câu)</button>
           <button class="num-mode-btn" data-mode="TIME" onclick="setNumberMode('TIME', this)">⏰ Giờ giấc (50 câu)</button>
           <button class="num-mode-btn" data-mode="LARGE_PCT" onclick="setNumberMode('LARGE_PCT', this)">📈 Số lớn & Phần trăm (50 câu)</button>
+          <button class="num-mode-btn" data-mode="CONTEXT_NUM" onclick="setNumberMode('CONTEXT_NUM', this)">🗣️ Số trong câu hội thoại (50 câu)</button>
         </div>
 
         <div class="audio-controls">
@@ -633,6 +818,61 @@
     <div style="display:flex; justify-content:flex-end; gap:10px;">
       <button class="btn" onclick="closeBgModal()">Đóng</button>
       <button class="btn btn-primary" onclick="saveCustomBg()">Áp dụng</button>
+    </div>
+  </div>
+</div>
+
+<!-- SPACED REPETITION FLASHCARD MODAL -->
+<div id="flashcardModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width: 600px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; flex-wrap:wrap;">
+      <h3 style="color:var(--primary);">🧠 Ôn Tập Flashcard Giãn Cách (SRS)</h3>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <select id="fcFilterSelect" class="daily-goal-select" onchange="initFlashcardSession()">
+          <option value="DUE">Đến hạn ôn tập hôm nay</option>
+          <option value="ALL">Tất cả thẻ trong Sổ tay</option>
+        </select>
+        <button class="btn btn-sm" onclick="closeFlashcardModal()">✕ Đóng</button>
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:var(--text-muted);" id="fcProgressInfo">
+      <span>Thẻ 1 / 1</span>
+      <span>Bấm vào thẻ hoặc phím Space để lật</span>
+    </div>
+
+    <div id="fcBodyArea">
+      <div class="flashcard-stage" onclick="flipFlashcard()">
+        <div class="flashcard-box" id="flashcardBox">
+          <span class="fc-side-tag" id="fcSideTag">🇬🇧 Tiếng Anh (Nghe & Nhớ nghĩa)</span>
+          <div class="fc-main-text" id="fcMainText">...</div>
+          <div class="fc-sub-text hidden" id="fcSubText"></div>
+          <div style="margin-top:14px;">
+            <button class="btn btn-sm" onclick="event.stopPropagation(); speakCurrentFlashcard();">🔊 Nghe phát âm</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="fcFlipPrompt" style="text-align:center;">
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px;" onclick="flipFlashcard()">🔄 Lật mặt sau xem đáp án (Space)</button>
+      </div>
+
+      <div id="fcRateArea" class="hidden">
+        <div style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">Đánh giá mức độ ghi nhớ của bạn để hệ thống hẹn lịch ôn lại:</div>
+        <div class="fc-rate-grid">
+          <button class="fc-rate-btn fc-rate-hard" onclick="rateFlashcard('HARD')">
+            <span>😓 Quên / Khó</span>
+            <span style="font-size:0.74rem; opacity:0.85;">Ôn lại sau 1 ngày (Phím 1)</span>
+          </button>
+          <button class="fc-rate-btn fc-rate-good" onclick="rateFlashcard('GOOD')">
+            <span>🤔 Nhớ mang máng</span>
+            <span style="font-size:0.74rem; opacity:0.85;">Ôn lại sau 3 ngày (Phím 2)</span>
+          </button>
+          <button class="fc-rate-btn fc-rate-easy" onclick="rateFlashcard('EASY')">
+            <span>🤩 Thuộc lòng</span>
+            <span style="font-size:0.74rem; opacity:0.85;" id="fcEasyIntervalLabel">Ôn lại sau 7 ngày (Phím 3)</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1021,6 +1261,7 @@
         await checkAdminStatus(user);
         renderLessons();
         updateHeaderStats();
+        loadHomeLeaderboard();
       } else {
         loginBtn.classList.remove('hidden');
         chip.classList.add('hidden');
@@ -1276,6 +1517,10 @@
     document.getElementById('savedVocabCount').textContent = savedNotebook.length;
     document.getElementById('filterMistakeCount').textContent = mistakesList.length;
     document.getElementById('rankBadge').textContent = totalDone >= 500 ? "👑 Huyền thoại" : totalDone >= 250 ? "🔥 Cao thủ" : totalDone >= 100 ? "⚡ Phản xạ Bạc" : totalDone >= 30 ? "🎧 Thợ săn từ" : "🌱 Tân binh";
+    const dueCount = getDueFlashcards().length;
+    const dueEl = document.getElementById('dueFlashcardCount');
+    if (dueEl) dueEl.textContent = dueCount;
+    updateDailyGoalUI();
   }
 
   function openMistakesReview() {
@@ -1390,6 +1635,8 @@
   }
 
   function goHome(fromPopState = false) {
+    stopPassivePodcast();
+    stopSpeechRecognition();
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     if (adminUnsubscribe) { adminUnsubscribe(); adminUnsubscribe = null; }
     if (!fromPopState && location.hash) {
@@ -1402,6 +1649,7 @@
     ALL_LESSONS = buildAllLessons();
     renderLessons();
     updateHeaderStats();
+    loadHomeLeaderboard();
   }
 
   function setupContextBlank(enText) {
@@ -1471,7 +1719,9 @@
     document.getElementById('hintBtn').innerHTML = isSingleTarget ? '💡 Gợi ý 1 chữ' : '💡 Gợi ý 1 từ';
   }
 
-  function loadCurrentItem() {
+  function loadCurrentItem(fromPassive = false) {
+    if (!fromPassive) stopPassivePodcast();
+    stopSpeechRecognition();
     justCheckedCorrect = false;
     isAnswerRevealed = false;
     updateAnswerRevealUI();
@@ -1668,6 +1918,7 @@
     if (allCorrect) {
       playTone('success');
       streak++;
+      recordDailyActivity(1);
       if (streak > bestStreak) { bestStreak = streak; localStorage.setItem('ee_best_streak', String(bestStreak)); }
       justCheckedCorrect = true;
       cardBox.classList.add('glow-ok');
@@ -2116,8 +2367,98 @@
     };
   }
 
+  function generateContextNumberQuestion(idx = -1) {
+    const scenarioTypes = ['FLIGHT_TIME', 'INVOICE_PRICE', 'MEETING_DATE', 'NEW_PHONE', 'ORDER_LARGE', 'GROWTH_PCT', 'WORKSHOP_TEENTY'];
+    const pickType = scenarioTypes[idx >= 0 ? (idx % scenarioTypes.length) : Math.floor(Math.random() * scenarioTypes.length)];
+    let sentence = '', viAsk = '', subQ = null;
+
+    if (pickType === 'FLIGHT_TIME') {
+      const q1 = generateTimeQuestion();
+      let q2 = generateTimeQuestion();
+      while (q2.displayAnswer === q1.displayAnswer) q2 = generateTimeQuestion();
+      sentence = `The flight was originally scheduled for ${q1.spokenText}, but due to heavy rain it has been delayed until ${q2.spokenText}.`;
+      viAsk = 'Nghe hội thoại & gõ: Giờ khởi hành mới sau khi bị hoãn';
+      subQ = q2;
+    } else if (pickType === 'INVOICE_PRICE') {
+      const q1 = generatePriceQuestion();
+      let q2 = generatePriceQuestion();
+      while (q2.displayAnswer === q1.displayAnswer) q2 = generatePriceQuestion();
+      sentence = `The subtotal was ${q1.spokenText}, so after applying your member discount, the final invoice is ${q2.spokenText}.`;
+      viAsk = 'Nghe hội thoại & gõ: Số tiền thanh toán cuối cùng trên hóa đơn';
+      subQ = q2;
+    } else if (pickType === 'MEETING_DATE') {
+      const q1 = generateDateQuestion();
+      let q2 = generateDateQuestion();
+      while (q2.displayAnswer === q1.displayAnswer) q2 = generateDateQuestion();
+      sentence = `We initially planned the client review for ${q1.spokenText}, however the director rescheduled it to ${q2.spokenText}.`;
+      viAsk = 'Nghe hội thoại & gõ: Ngày họp mới sau khi dời lịch';
+      subQ = q2;
+    } else if (pickType === 'NEW_PHONE') {
+      const q1 = generatePhoneQuestion();
+      let q2 = generatePhoneQuestion();
+      while (q2.displayAnswer === q1.displayAnswer) q2 = generatePhoneQuestion();
+      sentence = `Please do not call the old extension ${q1.spokenText}; you can reach our purchasing manager directly at ${q2.spokenText}.`;
+      viAsk = 'Nghe hội thoại & gõ: Số điện thoại mới của trưởng phòng thu mua';
+      subQ = q2;
+    } else if (pickType === 'ORDER_LARGE') {
+      const q1 = generateLargePctQuestion();
+      let q2 = generateLargePctQuestion();
+      while (q2.displayAnswer === q1.displayAnswer || q2.displayAnswer.includes('%')) q2 = generateLargePctQuestion();
+      sentence = `Our warehouse currently holds ${q1.spokenText} units in stock, and we just confirmed an urgent order for ${q2.spokenText} more.`;
+      viAsk = 'Nghe hội thoại & gõ: Số lượng hàng vừa đặt thêm';
+      subQ = q2;
+    } else if (pickType === 'GROWTH_PCT') {
+      const pcts = [
+        { n: '12.5', w: 'twelve point five percent' },
+        { n: '18.4', w: 'eighteen point four percent' },
+        { n: '24.5', w: 'twenty-four point five percent' },
+        { n: '32.8', w: 'thirty-two point eight percent' },
+        { n: '45.5', w: 'forty-five point five percent' },
+        { n: '68.2', w: 'sixty-eight point two percent' }
+      ];
+      const p1 = pcts[Math.floor(Math.random() * pcts.length)];
+      let p2 = pcts[Math.floor(Math.random() * pcts.length)];
+      while (p2.n === p1.n) p2 = pcts[Math.floor(Math.random() * pcts.length)];
+      sentence = `Last year our online sales grew by ${p1.w}, and this quarter growth reached ${p2.w}.`;
+      viAsk = 'Nghe hội thoại & gõ: Tỷ lệ tăng trưởng quý này (%)';
+      subQ = {
+        mode: 'LARGE_PCT',
+        displayAnswer: `${p2.n}%`,
+        spokenText: p2.w,
+        acceptedNorms: [p2.n, `${p2.n}%`, `${p2.n}percent`]
+      };
+    } else {
+      const q1 = generateTeenTyQuestion(idx);
+      const val1 = Number(q1.displayAnswer);
+      const val2 = val1 < 20 ? val1 * 10 - (val1 - 10) * 10 + (val1 - 10) * 10 : Math.floor(val1 / 10) + 10;
+      const word2 = intToEnglishWords(val2);
+      sentence = `We only prepared ${q1.spokenText} sample kits, but ${word2} buyers actually attended the conference.`;
+      viAsk = 'Nghe hội thoại & gõ: Số lượng khách mua hàng thực tế đã tham dự';
+      subQ = {
+        mode: 'TEEN_TY',
+        displayAnswer: String(val2),
+        spokenText: word2,
+        acceptedNorms: [String(val2), word2]
+      };
+    }
+
+    return {
+      mode: 'CONTEXT_NUM',
+      subMode: subQ.mode,
+      dateMeta: subQ.dateMeta || null,
+      timeMeta: subQ.timeMeta || null,
+      acceptedNorms: subQ.acceptedNorms || [],
+      categoryLabel: '🗣️ Số trong câu hội thoại',
+      hint: viAsk,
+      formatExample: 'Ví dụ gõ: 8:15, $2,450 hoặc 15th May 2026',
+      displayAnswer: subQ.displayAnswer,
+      spokenText: sentence,
+      spokenExplanation: `"${sentence}" → Đáp án chốt: ${subQ.displayAnswer}`
+    };
+  }
+
   function generateSingleNumberQuestion(mode, idx = -1) {
-    const modes = ['TEEN_TY', 'PHONE', 'PRICE', 'DATE', 'TIME', 'LARGE_PCT'];
+    const modes = ['TEEN_TY', 'PHONE', 'PRICE', 'DATE', 'TIME', 'LARGE_PCT', 'CONTEXT_NUM'];
     const targetMode = (mode === 'ALL' || !modes.includes(mode))
       ? modes[idx >= 0 ? (idx % modes.length) : Math.floor(Math.random() * modes.length)]
       : mode;
@@ -2129,6 +2470,7 @@
       case 'DATE': return generateDateQuestion();
       case 'TIME': return generateTimeQuestion();
       case 'LARGE_PCT': return generateLargePctQuestion();
+      case 'CONTEXT_NUM': return generateContextNumberQuestion(idx);
       default: return generateTeenTyQuestion(idx);
     }
   }
@@ -2166,7 +2508,8 @@
     if (!userRaw || !userRaw.trim()) return false;
     const rawLower = userRaw.toLowerCase().trim();
 
-    if (q.mode === 'DATE' && q.dateMeta) {
+    const effectiveMode = (q.mode === 'CONTEXT_NUM' && q.subMode) ? q.subMode : q.mode;
+    if (effectiveMode === 'DATE' && q.dateMeta) {
       const { day, monthNum, monthName, monthShort, year, ordShort } = q.dateMeta;
       const dPad = String(day).padStart(2, '0');
       const mPad = String(monthNum).padStart(2, '0');
@@ -2193,7 +2536,7 @@
       return validDates.has(cleaned) || validDates.has(noSpace);
     }
 
-    if (q.mode === 'TIME' && q.timeMeta) {
+    if (effectiveMode === 'TIME' && q.timeMeta) {
       const { h, m, spoken } = q.timeMeta;
       const mPad = String(m).padStart(2, '0');
       const hPad = String(h).padStart(2, '0');
@@ -2340,6 +2683,7 @@
       if (!numJustCheckedCorrect) {
         numSessionCorrect++;
         numSessionStreak++;
+        recordDailyActivity(1);
       }
       numJustCheckedCorrect = true;
       cardBox.classList.add('glow-ok');
@@ -2393,6 +2737,580 @@
     else { localStorage.removeItem('ee_custom_bg'); document.documentElement.style.setProperty('--bg-image', `url('bg.jpg')`); }
     closeBgModal();
   }
+
+
+  // =========================================================================
+  // MODULE 1: LUYỆN NÓI & CHẤM PHÁT ÂM (SPEECH-TO-TEXT SHADOWING)
+  // =========================================================================
+  let speechRec = null;
+  let isRecordingSpeech = false;
+
+  function stopSpeechRecognition() {
+    if (speechRec && isRecordingSpeech) {
+      try { speechRec.stop(); } catch (e) {}
+    }
+    isRecordingSpeech = false;
+    const btn = document.getElementById('micPracticeBtn');
+    if (btn) {
+      btn.classList.remove('recording');
+      btn.innerHTML = '<span>🎙️ Nói thử</span>';
+    }
+  }
+
+  function toggleSpeechRecognition() {
+    if (isRecordingSpeech) {
+      stopSpeechRecognition();
+      return;
+    }
+    const SpeechRecClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecClass) {
+      return alert('⚠️ Trình duyệt của bạn chưa hỗ trợ nhận diện giọng nói. Hãy mở web bằng Google Chrome hoặc Microsoft Edge để dùng nút 🎙️ Nói thử nhé!');
+    }
+    stopPassivePodcast();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+    const btn = document.getElementById('micPracticeBtn');
+    const feedback = document.getElementById('feedbackArea');
+    const rawItem = activeItems[currentIndex];
+    const targetStr = currentContextBlankTarget ? currentContextBlankTarget : parseItem(rawItem).en;
+
+    speechRec = new SpeechRecClass();
+    speechRec.lang = 'en-US';
+    speechRec.interimResults = true;
+    speechRec.maxAlternatives = 1;
+
+    isRecordingSpeech = true;
+    btn.classList.add('recording');
+    btn.innerHTML = '<span>⏹️ Đang nghe... (Bấm dừng)</span>';
+    feedback.style.display = 'block';
+    feedback.innerHTML = `<div style="color:var(--primary); font-weight:700;">🎙️ Hãy đọc to câu tiếng Anh mẫu vào micro...</div>`;
+
+    let finalTranscript = '';
+    speechRec.onresult = (event) => {
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const txt = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalTranscript += txt + ' ';
+        else interim += txt;
+      }
+      const preview = (finalTranscript + interim).trim();
+      if (preview) {
+        feedback.innerHTML = `<div style="color:#94a3b8; font-size:0.85rem;">🎙️ Đang nhận diện: <strong style="color:#fff;">"${escapeHtml(preview)}"</strong></div>`;
+      }
+    };
+
+    speechRec.onerror = (event) => {
+      isRecordingSpeech = false;
+      btn.classList.remove('recording');
+      btn.innerHTML = '<span>🎙️ Nói thử</span>';
+      const msg = event.error === 'not-allowed'
+        ? 'Bạn chưa cấp quyền Micro cho trình duyệt. Hãy bấm biểu tượng ổ khóa trên thanh địa chỉ và cho phép Microphone!'
+        : 'Chưa nghe rõ giọng nói. Bấm 🎙️ Nói thử và đọc to rõ hơn một chút nhé!';
+      feedback.innerHTML = `<div style="color:#fbbf24; font-weight:600;">⚠️ ${msg}</div>`;
+    };
+
+    speechRec.onend = () => {
+      const wasRecording = isRecordingSpeech;
+      isRecordingSpeech = false;
+      btn.classList.remove('recording');
+      btn.innerHTML = '<span>🎙️ Nói thử</span>';
+      if (!wasRecording) return;
+
+      const spoken = finalTranscript.trim();
+      if (!spoken) {
+        feedback.innerHTML = `<div style="color:#fbbf24;">⚠️ Chưa ghi nhận được câu nói nào. Hãy thử bấm 🎙️ Nói thử lại nhé!</div>`;
+        return;
+      }
+      evaluateSpokenPronunciation(spoken, targetStr, rawItem);
+    };
+
+    try {
+      speechRec.start();
+    } catch (e) {
+      stopSpeechRecognition();
+    }
+  }
+
+  function evaluateSpokenPronunciation(spokenText, targetStr, rawItem) {
+    const targetNorm = normalizeWords(targetStr);
+    const spokenNorm = normalizeWords(spokenText);
+    const spokenSet = new Set(spokenNorm);
+    const feedback = document.getElementById('feedbackArea');
+    const cardBox = document.getElementById('practiceCardBox');
+
+    let matchedCount = 0;
+    let chipsHtml = '';
+    targetNorm.forEach((word, idx) => {
+      if (spokenNorm[idx] === word || spokenSet.has(word)) {
+        matchedCount++;
+        chipsHtml += `<span class="word-chip word-ok">${escapeHtml(word)}</span>`;
+      } else {
+        chipsHtml += `<span class="word-chip word-err">${escapeHtml(word)}</span>`;
+      }
+    });
+
+    const accuracy = targetNorm.length > 0 ? Math.round((matchedCount / targetNorm.length) * 100) : 0;
+    cardBox.classList.remove('glow-ok', 'shake-err');
+    void cardBox.offsetWidth;
+
+    let statusLine = '';
+    if (accuracy >= 85) {
+      playTone('success');
+      streak++;
+      if (streak > bestStreak) { bestStreak = streak; localStorage.setItem('ee_best_streak', String(bestStreak)); }
+      localStorage.setItem('ee_streak', String(streak));
+      cardBox.classList.add('glow-ok');
+      triggerRandomSticker('correct', streak);
+      recordDailyActivity(1);
+      addNoteToSidebar(rawItem, currentLesson.id);
+      const origIdx = currentLesson.items.indexOf(rawItem);
+      if (currentLesson.id !== 'mistakes-review' && origIdx !== -1) {
+        if (!Array.isArray(progressMap[currentLesson.id])) progressMap[currentLesson.id] = [];
+        if (!progressMap[currentLesson.id].includes(origIdx)) progressMap[currentLesson.id].push(origIdx);
+        localStorage.setItem('ee_progress', JSON.stringify(progressMap));
+      }
+      syncProgressToCloud({ lastLessonTitle: currentLesson.title });
+      updateHeaderStats();
+      statusLine = `<div style="margin-top:10px; color:#34d399; font-weight:800;">🎉 Phát âm chuẩn ${accuracy}%! Đã tính hoàn thành câu & cộng vào mục tiêu ngày.</div>`;
+    } else {
+      playTone('error');
+      cardBox.classList.add('shake-err');
+      statusLine = `<div style="margin-top:10px; color:#fbbf24; font-weight:700;">💪 Độ khớp đạt ${accuracy}%. Nghe lại mẫu và đọc rõ hơn các từ màu đỏ nhé!</div>`;
+    }
+
+    feedback.style.display = 'block';
+    feedback.innerHTML = `
+      <div style="font-size:0.86rem; color:#cbd5e1; margin-bottom:6px;">🎙️ Hệ thống nghe được: <strong style="color:#fff;">"${escapeHtml(spokenText)}"</strong></div>
+      <div style="margin-bottom:6px; font-weight:700; color:var(--primary);">Chấm phát âm từng từ (Độ chuẩn: ${accuracy}%):</div>
+      <div>${chipsHtml}</div>
+      ${statusLine}
+    `;
+  }
+
+  // =========================================================================
+  // MODULE 3: ÔN TẬP GIÃN CÁCH THÔNG MINH (SPACED REPETITION FLASHCARDS)
+  // =========================================================================
+  let fcDeck = [];
+  let fcIndex = 0;
+  let fcFlipped = false;
+
+  function getDueFlashcards() {
+    const now = Date.now();
+    return savedNotebook.filter(item => !item.nextReview || item.nextReview <= now);
+  }
+
+  function openFlashcardModal() {
+    if (savedNotebook.length === 0) {
+      return alert('📓 Sổ tay từ vựng của bạn đang trống! Hãy luyện nghe đúng vài câu hoặc bấm "📌 Lưu sổ tay" trước nhé.');
+    }
+    stopPassivePodcast();
+    stopSpeechRecognition();
+    document.getElementById('flashcardModal').style.display = 'flex';
+    const due = getDueFlashcards();
+    document.getElementById('fcFilterSelect').value = due.length > 0 ? 'DUE' : 'ALL';
+    initFlashcardSession();
+  }
+
+  function closeFlashcardModal() {
+    document.getElementById('flashcardModal').style.display = 'none';
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    updateHeaderStats();
+  }
+
+  function initFlashcardSession() {
+    const mode = document.getElementById('fcFilterSelect').value;
+    const list = mode === 'DUE' ? getDueFlashcards() : [...savedNotebook];
+    fcDeck = list.sort(() => Math.random() - 0.5);
+    fcIndex = 0;
+    renderCurrentFlashcard();
+  }
+
+  function renderCurrentFlashcard() {
+    const body = document.getElementById('fcBodyArea');
+    const info = document.getElementById('fcProgressInfo');
+    if (fcDeck.length === 0) {
+      info.innerHTML = '<span>🎉 Hoàn tất lịch ôn hôm nay!</span><span>0 thẻ đến hạn</span>';
+      body.innerHTML = `
+        <div style="text-align:center; padding:28px 14px;">
+          <div style="font-size:3rem; margin-bottom:8px;">🏆</div>
+          <div style="font-weight:800; font-size:1.1rem; color:#34d399; margin-bottom:6px;">Bạn đã ôn hết toàn bộ thẻ đến hạn hôm nay!</div>
+          <p style="font-size:0.86rem; color:var(--text-muted); margin-bottom:14px;">Chọn "Tất cả thẻ trong Sổ tay" ở góc trên nếu muốn ôn tự do thêm.</p>
+          <button class="btn btn-primary" onclick="document.getElementById('fcFilterSelect').value='ALL'; initFlashcardSession();">🔄 Ôn toàn bộ ${savedNotebook.length} thẻ</button>
+        </div>
+      `;
+      return;
+    }
+
+    // Restore body HTML if previously replaced by completion message
+    if (!document.getElementById('flashcardBox')) {
+      body.innerHTML = `
+        <div class="flashcard-stage" onclick="flipFlashcard()">
+          <div class="flashcard-box" id="flashcardBox">
+            <span class="fc-side-tag" id="fcSideTag">🇬🇧 Tiếng Anh (Nghe & Nhớ nghĩa)</span>
+            <div class="fc-main-text" id="fcMainText">...</div>
+            <div class="fc-sub-text hidden" id="fcSubText"></div>
+            <div style="margin-top:14px;">
+              <button class="btn btn-sm" onclick="event.stopPropagation(); speakCurrentFlashcard();">🔊 Nghe phát âm</button>
+            </div>
+          </div>
+        </div>
+        <div id="fcFlipPrompt" style="text-align:center;">
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:11px;" onclick="flipFlashcard()">🔄 Lật mặt sau xem đáp án (Space)</button>
+        </div>
+        <div id="fcRateArea" class="hidden">
+          <div style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">Đánh giá mức độ ghi nhớ của bạn để hệ thống hẹn lịch ôn lại:</div>
+          <div class="fc-rate-grid">
+            <button class="fc-rate-btn fc-rate-hard" onclick="rateFlashcard('HARD')">
+              <span>😓 Quên / Khó</span>
+              <span style="font-size:0.74rem; opacity:0.85;">Ôn lại sau 1 ngày (Phím 1)</span>
+            </button>
+            <button class="fc-rate-btn fc-rate-good" onclick="rateFlashcard('GOOD')">
+              <span>🤔 Nhớ mang máng</span>
+              <span style="font-size:0.74rem; opacity:0.85;">Ôn lại sau 3 ngày (Phím 2)</span>
+            </button>
+            <button class="fc-rate-btn fc-rate-easy" onclick="rateFlashcard('EASY')">
+              <span>🤩 Thuộc lòng</span>
+              <span style="font-size:0.74rem; opacity:0.85;" id="fcEasyIntervalLabel">Ôn lại sau 7 ngày (Phím 3)</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    const card = fcDeck[fcIndex];
+    fcFlipped = false;
+    info.innerHTML = `<span>Thẻ ${fcIndex + 1} / ${fcDeck.length}</span><span>Bấm vào thẻ hoặc phím Space để lật</span>`;
+
+    const box = document.getElementById('flashcardBox');
+    box.classList.remove('is-flipped');
+    document.getElementById('fcSideTag').textContent = '🇬🇧 Tiếng Anh (Nghe & Nhớ nghĩa)';
+    document.getElementById('fcMainText').textContent = card.en;
+    const sub = document.getElementById('fcSubText');
+    sub.classList.add('hidden');
+    sub.textContent = '';
+
+    document.getElementById('fcFlipPrompt').classList.remove('hidden');
+    document.getElementById('fcRateArea').classList.add('hidden');
+
+    const nextEasyDays = Math.max(7, (card.srsInterval || 3) * 2);
+    const easyLbl = document.getElementById('fcEasyIntervalLabel');
+    if (easyLbl) easyLbl.textContent = `Ôn lại sau ${nextEasyDays} ngày (Phím 3)`;
+
+    setTimeout(() => speakText(card.en), 180);
+  }
+
+  function speakCurrentFlashcard() {
+    if (fcDeck[fcIndex]) speakText(fcDeck[fcIndex].en);
+  }
+
+  function flipFlashcard() {
+    if (!fcDeck[fcIndex]) return;
+    const card = fcDeck[fcIndex];
+    fcFlipped = !fcFlipped;
+    const box = document.getElementById('flashcardBox');
+    const tag = document.getElementById('fcSideTag');
+    const main = document.getElementById('fcMainText');
+    const sub = document.getElementById('fcSubText');
+
+    if (fcFlipped) {
+      box.classList.add('is-flipped');
+      tag.textContent = '🇻🇳 Nghĩa Tiếng Việt & Ghi chú';
+      main.textContent = card.vi;
+      sub.textContent = card.note ? `📝 Ghi chú: ${card.note}` : `🇬🇧 ${card.en}`;
+      sub.classList.remove('hidden');
+      document.getElementById('fcFlipPrompt').classList.add('hidden');
+      document.getElementById('fcRateArea').classList.remove('hidden');
+    } else {
+      box.classList.remove('is-flipped');
+      tag.textContent = '🇬🇧 Tiếng Anh (Nghe & Nhớ nghĩa)';
+      main.textContent = card.en;
+      sub.classList.add('hidden');
+      document.getElementById('fcFlipPrompt').classList.remove('hidden');
+      document.getElementById('fcRateArea').classList.add('hidden');
+    }
+  }
+
+  function rateFlashcard(rating) {
+    const card = fcDeck[fcIndex];
+    if (!card) return;
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const targetItem = savedNotebook.find(n => n.en.toLowerCase() === card.en.toLowerCase()) || card;
+
+    if (rating === 'HARD') {
+      targetItem.srsInterval = 1;
+      targetItem.nextReview = now + 1 * DAY_MS;
+      fcDeck.push(targetItem); // Đưa xuống cuối phiên để ôn lại ngay
+    } else if (rating === 'GOOD') {
+      targetItem.srsInterval = 3;
+      targetItem.nextReview = now + 3 * DAY_MS;
+    } else {
+      const nextDays = Math.max(7, (targetItem.srsInterval || 3) * 2);
+      targetItem.srsInterval = nextDays;
+      targetItem.nextReview = now + nextDays * DAY_MS;
+    }
+
+    localStorage.setItem('ee_notebook', JSON.stringify(savedNotebook));
+    syncProgressToCloud();
+    recordDailyActivity(1);
+
+    if (fcIndex < fcDeck.length - 1) {
+      fcIndex++;
+      renderCurrentFlashcard();
+    } else {
+      launchConfetti();
+      fcDeck = [];
+      renderCurrentFlashcard();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const fcModal = document.getElementById('flashcardModal');
+    if (!fcModal || fcModal.style.display !== 'flex') return;
+    if (e.key === 'Escape') { e.preventDefault(); closeFlashcardModal(); }
+    else if (e.code === 'Space') { e.preventDefault(); flipFlashcard(); }
+    else if (fcFlipped && e.key === '1') { e.preventDefault(); rateFlashcard('HARD'); }
+    else if (fcFlipped && e.key === '2') { e.preventDefault(); rateFlashcard('GOOD'); }
+    else if (fcFlipped && e.key === '3') { e.preventDefault(); rateFlashcard('EASY'); }
+  });
+
+  // =========================================================================
+  // MODULE 4: MỤC TIÊU NGÀY (DAILY GOAL) & BẢNG XẾP HẠNG TOP 5 TRANG CHỦ
+  // =========================================================================
+  function getTodayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function getDailyGoalState() {
+    const today = getTodayKey();
+    const target = parseInt(localStorage.getItem('ee_daily_target') || '20', 10) || 20;
+    const savedDate = localStorage.getItem('ee_daily_date') || today;
+    let count = parseInt(localStorage.getItem('ee_daily_count') || '0', 10) || 0;
+    if (savedDate !== today) {
+      count = 0;
+      localStorage.setItem('ee_daily_date', today);
+      localStorage.setItem('ee_daily_count', '0');
+    }
+    return { today, count, target };
+  }
+
+  function recordDailyActivity(points = 1) {
+    const state = getDailyGoalState();
+    const prevCount = state.count;
+    const newCount = prevCount + points;
+    localStorage.setItem('ee_daily_date', state.today);
+    localStorage.setItem('ee_daily_count', String(newCount));
+    updateDailyGoalUI();
+    if (prevCount < state.target && newCount >= state.target) {
+      launchConfetti();
+    }
+  }
+
+  function changeDailyTarget(val) {
+    const num = parseInt(val, 10) || 20;
+    localStorage.setItem('ee_daily_target', String(num));
+    updateDailyGoalUI();
+  }
+
+  function updateDailyGoalUI() {
+    const { count, target } = getDailyGoalState();
+    const sel = document.getElementById('dailyTargetSelect');
+    if (sel) sel.value = String(target);
+    const pct = Math.min(100, Math.round((count / target) * 100));
+    const lbl = document.getElementById('dailyProgressLabel');
+    const pctEl = document.getElementById('dailyPctLabel');
+    const fill = document.getElementById('dailyProgressFill');
+    const mot = document.getElementById('dailyMotivationText');
+
+    if (lbl) lbl.textContent = `${count} / ${target} câu`;
+    if (pctEl) pctEl.textContent = `${pct}%`;
+    if (fill) fill.style.width = `${pct}%`;
+    if (mot) {
+      if (count >= target) {
+        mot.innerHTML = `<span style="color:#34d399; font-weight:700;">🎉 Tuyệt vời! Bạn đã hoàn thành xuất sắc mục tiêu hôm nay!</span>`;
+      } else {
+        mot.textContent = `Còn ${target - count} câu nữa để chạm mốc mục tiêu hôm nay. Cố lên!`;
+      }
+    }
+  }
+
+  async function loadHomeLeaderboard() {
+    const listEl = document.getElementById('homeLeaderboardList');
+    if (!listEl) return;
+
+    let totalLocalDone = 0;
+    Object.values(progressMap).forEach(arr => { if (Array.isArray(arr)) totalLocalDone += arr.length; });
+
+    const renderRows = (rows) => {
+      if (!rows || rows.length === 0) {
+        listEl.innerHTML = `<div style="font-size:0.83rem; color:var(--text-muted); text-align:center; padding:12px 0;">Chưa có dữ liệu bảng xếp hạng.</div>`;
+        return;
+      }
+      const medals = ['🥇', '🥈', '🥉', '4', '5'];
+      listEl.innerHTML = rows.slice(0, 5).map((st, idx) => {
+        const isMe = currentUser && (st.uid === currentUser.uid || st.email === currentUser.email);
+        const avatar = st.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+        const name = escapeHtml(st.name || 'Học viên');
+        const score = st.totalMastered || 0;
+        const stStreak = st.bestStreak || st.streak || 0;
+        return `
+          <div class="lb-row ${isMe ? 'is-me' : ''}">
+            <div class="lb-left">
+              <span class="lb-medal">${medals[idx] || (idx + 1)}</span>
+              <img class="lb-avatar" src="${avatar}" alt="" />
+              <span class="lb-name">${name}${isMe ? ' (Bạn)' : ''}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.75rem; color:#fbbf24;">🔥${stStreak}</span>
+              <span class="lb-score">${score} câu</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    if (!db) {
+      renderRows([{
+        uid: 'local', name: 'Bạn (Chế độ Khách)', photoURL: '', totalMastered: totalLocalDone, bestStreak: bestStreak
+      }]);
+      return;
+    }
+
+    try {
+      const snap = await db.collection('users').orderBy('totalMastered', 'desc').limit(5).get();
+      const topList = [];
+      snap.forEach(doc => topList.push(doc.data()));
+      if (topList.length > 0) {
+        renderRows(topList);
+      } else {
+        renderRows([{
+          uid: currentUser ? currentUser.uid : 'local',
+          name: currentUser ? (currentUser.displayName || 'Bạn') : 'Bạn (Chế độ Khách)',
+          photoURL: currentUser ? currentUser.photoURL : '',
+          totalMastered: totalLocalDone,
+          bestStreak: bestStreak
+        }]);
+      }
+    } catch (e) {
+      renderRows([{
+        uid: currentUser ? currentUser.uid : 'local',
+        name: currentUser ? (currentUser.displayName || 'Bạn') : 'Bạn (Đăng nhập Google để đua Top)',
+        photoURL: currentUser ? currentUser.photoURL : '',
+        totalMastered: totalLocalDone,
+        bestStreak: bestStreak
+      }]);
+    }
+  }
+
+  // =========================================================================
+  // MODULE 5: CHẾ ĐỘ NGHE THỤ ĐỘNG / PODCAST PLAYLIST (HANDS-FREE)
+  // =========================================================================
+  let isPassivePodcastActive = false;
+  let passiveTimer = null;
+
+  function togglePassivePodcast() {
+    if (isPassivePodcastActive) {
+      stopPassivePodcast();
+    } else {
+      startPassivePodcast();
+    }
+  }
+
+  function startPassivePodcast() {
+    if (!currentLesson || activeItems.length === 0) return;
+    stopSpeechRecognition();
+    isPassivePodcastActive = true;
+
+    const btn = document.getElementById('passivePlayBtn');
+    const banner = document.getElementById('passiveBanner');
+    if (btn) {
+      btn.classList.remove('btn-warning');
+      btn.classList.add('btn-danger');
+      btn.innerHTML = '⏹️ Dừng phát';
+    }
+    if (banner) banner.classList.add('active');
+
+    runPassiveCycle();
+  }
+
+  function stopPassivePodcast() {
+    isPassivePodcastActive = false;
+    clearTimeout(passiveTimer);
+    passiveTimer = null;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    const waves = [document.getElementById('waveBars'), document.getElementById('numWaveBars')].filter(Boolean);
+    waves.forEach(w => w.classList.remove('speaking'));
+
+    const btn = document.getElementById('passivePlayBtn');
+    const banner = document.getElementById('passiveBanner');
+    if (btn) {
+      btn.classList.remove('btn-danger');
+      btn.classList.add('btn-warning');
+      btn.innerHTML = '▶️ Nghe thụ động';
+    }
+    if (banner) banner.classList.remove('active');
+  }
+
+  function speakPromise(text) {
+    return new Promise((resolve) => {
+      if (!window.speechSynthesis || !isPassivePodcastActive) return resolve();
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = speechRate;
+      utter.volume = 1.0;
+      const voiceIdx = document.getElementById('voiceSelect').value;
+      if (voices[voiceIdx]) utter.voice = voices[voiceIdx];
+      const wave = document.getElementById('waveBars');
+      utter.onstart = () => { if (wave) wave.classList.add('speaking'); };
+      utter.onend = () => { if (wave) wave.classList.remove('speaking'); resolve(); };
+      utter.onerror = () => { if (wave) wave.classList.remove('speaking'); resolve(); };
+      window.speechSynthesis.speak(utter);
+    });
+  }
+
+  async function runPassiveCycle() {
+    if (!isPassivePodcastActive || !currentLesson) return;
+    const item = parseItem(activeItems[currentIndex]);
+    const statusEl = document.getElementById('passiveStatusText');
+
+    // Hiện sẵn đáp án tiếng Anh & nghĩa tiếng Việt để người học liếc nhìn & nhẩm theo
+    isAnswerRevealed = true;
+    updateAnswerRevealUI();
+    document.getElementById('meaningBox').style.display = 'flex';
+
+    if (statusEl) statusEl.textContent = `Câu ${currentIndex + 1}/${activeItems.length} — Đang đọc lần 1...`;
+    await speakPromise(item.en);
+    if (!isPassivePodcastActive) return;
+
+    const repeat2x = document.getElementById('passiveRepeat2x') && document.getElementById('passiveRepeat2x').checked;
+    if (repeat2x) {
+      await new Promise(r => { passiveTimer = setTimeout(r, 850); });
+      if (!isPassivePodcastActive) return;
+      if (statusEl) statusEl.textContent = `Câu ${currentIndex + 1}/${activeItems.length} — Đang đọc lặp lại lần 2...`;
+      await speakPromise(item.en);
+      if (!isPassivePodcastActive) return;
+    }
+
+    if (statusEl) statusEl.textContent = `Câu ${currentIndex + 1}/${activeItems.length} — Nghỉ 2.5s để bạn nhẩm theo...`;
+    await new Promise(r => { passiveTimer = setTimeout(r, 2500); });
+    if (!isPassivePodcastActive) return;
+
+    if (currentIndex < activeItems.length - 1) {
+      currentIndex++;
+      loadCurrentItem(true);
+      runPassiveCycle();
+    } else {
+      stopPassivePodcast();
+      launchConfetti();
+      alert('🎧 Đã phát xong trọn vẹn 50 mục của bài học!');
+    }
+  }
+
+  // Khởi tạo Daily Goal & Top 5 Leaderboard ngay khi tải trang
+  updateDailyGoalUI();
+  loadHomeLeaderboard();
 
   try {
     applyTheme(currentThemeIdx);
