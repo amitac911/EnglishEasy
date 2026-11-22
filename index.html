@@ -671,6 +671,15 @@
     } catch (e) { return fallback; }
   }
 
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   const STICKERS_CORRECT = [
     { icon: "🥳", text: "Đỉnh nóc kịch trần luôn!" },
     { icon: "🚀", text: "Bắn thẳng lên mặt trăng!" },
@@ -719,7 +728,7 @@
   const savedCustomBg = localStorage.getItem('ee_custom_bg');
   if (savedCustomBg) document.documentElement.style.setProperty('--bg-image', `url('${savedCustomBg}')`);
 
-  // Kho hội thoại & câu ngữ cảnh giàu chia thì / danh từ số nhiều để bổ sung bài học
+  // Kho hội thoại & mẫu câu chuẩn đúng từng trình độ (tuyệt đối không trộn B1/B2 vào A1/A2)
   const LEVEL_POOLS = {
     A1: [
       "Good morning, how are you doing today? I am doing great, thank you! | Chào buổi sáng, hôm nay bạn thế nào? Mình rất khỏe, cảm ơn bạn!",
@@ -728,12 +737,26 @@
       "She usually wakes up at six o'clock and prepares breakfast for her family. | Cô ấy thường thức dậy lúc 6 giờ và chuẩn bị bữa sáng cho gia đình.",
       "Do you have enough time to help me with this homework today? | Hôm nay bạn có đủ thời gian giúp tôi làm bài tập về nhà này không?",
       "We are going to the supermarket after work to buy some fresh vegetables. | Chúng tôi sẽ đi siêu thị sau giờ làm để mua ít rau tươi.",
-      "He is very busy with his new project at the office right now. | Hiện tại anh ấy đang rất bận với dự án mới ở văn phòng.",
+      "He is very busy with his new job at the office right now. | Hiện tại anh ấy đang rất bận với công việc mới ở văn phòng.",
       "What time do you usually have dinner with your family? Usually around seven. | Bạn thường ăn tối cùng gia đình lúc mấy giờ? Thường khoảng 7 giờ.",
       "Can I pay by credit card here? Yes, we accept both cash and cards. | Tôi có thể thanh toán bằng thẻ tín dụng ở đây không? Vâng, chúng tôi nhận cả tiền mặt và thẻ.",
       "My younger brother studies English every weekend with his friends. | Em trai tôi học tiếng Anh vào mỗi cuối tuần cùng các bạn.",
       "How much does this blue jacket cost? It is forty dollars. | Chiếc áo khoác xanh này giá bao nhiêu? Nó có giá 40 đô la.",
-      "They have lived in Hanoi for more than five years. | Họ đã sống ở Hà Nội được hơn năm năm rồi."
+      "They have lived in Hanoi for more than five years. | Họ đã sống ở Hà Nội được hơn năm năm rồi.",
+      "What is your name and where are you from? | Tên bạn là gì và bạn đến từ đâu?",
+      "Nice to meet you, please have a seat over here. | Rất vui được gặp bạn, mời ngồi ở đây nhé.",
+      "I like drinking iced coffee every morning before work. | Tôi thích uống cà phê đá mỗi sáng trước khi đi làm.",
+      "Could you speak a little slower, please? | Bạn có thể nói chậm hơn một chút được không?",
+      "My sister works as a teacher at a primary school. | Chị gái tôi làm giáo viên ở một trường tiểu học.",
+      "Today is sunny and warm, so let's go to the park. | Hôm nay trời nắng ấm, chúng ta ra công viên đi.",
+      "I usually go to bed at eleven o'clock on weekdays. | Tôi thường đi ngủ lúc 11 giờ vào các ngày trong tuần.",
+      "Can you tell me your phone number, please? | Bạn có thể cho tôi biết số điện thoại của bạn không?",
+      "There is a small bookstore next to the post office. | Có một hiệu sách nhỏ ở ngay cạnh bưu điện.",
+      "What do you like doing in your free time? | Bạn thích làm gì vào thời gian rảnh?",
+      "I often listen to music and watch movies on Sundays. | Tôi thường nghe nhạc và xem phim vào Chủ nhật.",
+      "Please close the window because it is getting cold outside. | Làm ơn đóng cửa sổ lại vì ngoài trời đang lạnh dần.",
+      "Thank you so much for your help today! | Cảm ơn bạn rất nhiều vì sự giúp đỡ hôm nay!",
+      "See you tomorrow morning at the bus stop. | Hẹn gặp lại bạn sáng mai ở trạm xe buýt nhé."
     ],
     A2: [
       "Hello, I would like to book a table for four people tonight. Certainly, what time? | Xin chào, tôi muốn đặt một bàn cho bốn người tối nay. Chắc chắn rồi, mấy giờ ạ?",
@@ -745,7 +768,15 @@
       "Could you recommend a good local restaurant near our hotel? | Bạn có thể giới thiệu một nhà hàng địa phương ngon gần khách sạn của chúng tôi không?",
       "We attended two long meetings yesterday afternoon with the marketing team. | Chiều hôm qua chúng tôi đã tham dự hai cuộc họp dài với đội tiếp thị.",
       "Is this discount still available if I buy two items? Yes, you get twenty percent off. | Ưu đãi này vẫn áp dụng nếu tôi mua hai món chứ? Vâng, bạn được giảm 20%.",
-      "She went to the pharmacy to buy some medicine for her sore throat. | Cô ấy đã đến hiệu thuốc để mua một ít thuốc trị đau họng."
+      "She went to the pharmacy to buy some medicine for her sore throat. | Cô ấy đã đến hiệu thuốc để mua một ít thuốc trị đau họng.",
+      "I forgot to bring my umbrella, so I got completely wet in the rain. | Tôi quên mang ô nên đã bị ướt sũng dưới mưa.",
+      "Would you mind helping me carry this heavy suitcase upstairs? | Bạn có phiền giúp tôi mang chiếc vali nặng này lên lầu không?",
+      "We decided to visit Da Nang next month because the beaches are lovely. | Chúng tôi quyết định đi Đà Nẵng tháng tới vì bãi biển rất đẹp.",
+      "Can I try this shirt on in a medium size? | Tôi có thể thử chiếc áo sơ mi này cỡ vừa không?",
+      "He missed the early train because his alarm clock did not ring. | Anh ấy bị lỡ chuyến tàu sớm vì đồng hồ báo thức không reo.",
+      "I have been learning English for six months to improve my speaking skills. | Tôi đã học tiếng Anh được sáu tháng để cải thiện kỹ năng nói.",
+      "Let's meet at the café near the cinema around six thirty. | Hãy gặp nhau ở quán cà phê gần rạp chiếu phim khoảng 6 giờ 30 nhé.",
+      "Don't forget to check your passport before leaving for the airport. | Đừng quên kiểm tra hộ chiếu trước khi ra sân bay nhé."
     ],
     B1: [
       "We will send you the official quotation and product samples tomorrow morning. | Chúng tôi sẽ gửi bảng báo giá chính thức và mẫu sản phẩm cho bạn vào sáng mai.",
@@ -753,13 +784,25 @@
       "The production team is working overtime to meet the Friday delivery deadline. | Đội ngũ sản xuất đang làm thêm giờ để kịp hạn giao hàng thứ Sáu.",
       "We have negotiated better payment terms with our main raw material suppliers. | Chúng tôi đã đàm phán được điều khoản thanh toán tốt hơn với các nhà cung cấp nguyên liệu chính.",
       "All departments must collaborate closely to ensure consistent product quality. | Tất cả các phòng ban phải hợp tác chặt chẽ để đảm bảo chất lượng sản phẩm đồng đều.",
-      "Have you reviewed the updated contract that our legal team sent yesterday? | Bạn đã xem qua bản hợp đồng cập nhật mà bộ phận pháp chế gửi hôm qua chưa?"
+      "Have you reviewed the updated contract that our legal team sent yesterday? | Bạn đã xem qua bản hợp đồng cập nhật mà bộ phận pháp chế gửi hôm qua chưa?",
+      "Please let me know if you need any technical documents for this batch. | Vui lòng cho tôi biết nếu bạn cần thêm tài liệu kỹ thuật cho lô hàng này.",
+      "Our company aims to expand its distribution network across Southeast Asia. | Công ty chúng tôi đặt mục tiêu mở rộng mạng lưới phân phối khắp Đông Nam Á.",
+      "We appreciate your prompt feedback and look forward to a long-term partnership. | Chúng tôi đánh giá cao phản hồi nhanh của bạn và mong đợi hợp tác lâu dài.",
+      "The presentation has been postponed until next Tuesday due to scheduling conflicts. | Buổi thuyết trình đã được hoãn sang thứ Ba tuần tới do trùng lịch.",
+      "Regular customer follow-up plays a key role in building trust and loyalty. | Việc chăm sóc khách hàng thường xuyên đóng vai trò then chốt trong xây dựng niềm tin.",
+      "Could you summarize the main action points from today's meeting? | Bạn có thể tóm tắt các đầu việc chính từ cuộc họp hôm nay không?"
     ],
     B2: [
       "Spray drying technology helps preserve bioactive compounds in herbal extracts. | Công nghệ sấy phun giúp bảo tồn các hợp chất có hoạt tính sinh học trong chiết xuất thảo dược.",
       "Strict quality control procedures are essential throughout pharmaceutical manufacturing. | Quy trình kiểm soát chất lượng nghiêm ngặt là yếu tố sống còn trong suốt quá trình sản xuất dược phẩm.",
       "Recent clinical studies have demonstrated significant improvements in bioavailability. | Các nghiên cứu lâm sàng gần đây đã chứng minh những cải thiện đáng kể về sinh khả dụng.",
-      "Standardizing active ingredients ensures reliable therapeutic outcomes for patients. | Việc chuẩn hóa các hoạt chất đảm bảo hiệu quả điều trị ổn định cho bệnh nhân."
+      "Standardizing active ingredients ensures reliable therapeutic outcomes for patients. | Việc chuẩn hóa các hoạt chất đảm bảo hiệu quả điều trị ổn định cho bệnh nhân.",
+      "Sustainable sourcing strategies are increasingly vital for modern supply chains. | Chiến lược tìm nguồn cung ứng bền vững ngày càng quan trọng đối với chuỗi cung ứng hiện đại.",
+      "Artificial intelligence is transforming how companies analyze consumer behavior. | Trí tuệ nhân tạo đang thay đổi cách các doanh nghiệp phân tích hành vi người tiêu dùng.",
+      "Governments must invest heavily in renewable energy to mitigate climate change. | Các chính phủ phải đầu tư mạnh vào năng lượng tái tạo để giảm thiểu biến đổi khí hậu.",
+      "Effective risk management requires anticipating disruptions before they escalate. | Quản trị rủi ro hiệu quả đòi hỏi phải lường trước sự cố trước khi chúng leo thang.",
+      "Despite initial skepticism, the new policy yielded remarkable economic growth. | Bất chấp sự hoài nghi ban đầu, chính sách mới đã mang lại tăng trưởng kinh tế đáng kể.",
+      "Transparent communication fosters accountability across multidisciplinary teams. | Giao tiếp minh bạch thúc đẩy tinh thần trách nhiệm giữa các nhóm đa chuyên môn."
     ]
   };
 
@@ -782,7 +825,7 @@
     confirmed: "confirm", confirming: "confirm",
     samples: "sample", items: "item",
     demonstrated: "demonstrate", improvements: "improvement",
-    studies: "study", patients: "patient", compounds: "compound", extracts: "extract"
+    patients: "patient", compounds: "compound", extracts: "extract"
   };
 
   const STOPWORDS = new Set([
@@ -801,7 +844,7 @@
     { id: "default-4", level: "B2", title: "Bài 4: Khoa học & Dược phẩm Chuyên sâu", desc: "Luyện nghe câu học thuật và thuật ngữ chuyên ngành.", items: LEVEL_POOLS.B2 }
   ];
 
-  // Giữ nguyên 100% thứ tự hội thoại/câu gốc của bài học, chỉ bổ sung thêm câu/hội thoại ở cuối nếu chưa đủ 50
+  // Giữ nguyên 100% thứ tự câu gốc của bài học; nếu thiếu <50 câu thì CHỈ bổ sung từ cùng trình độ (không bao giờ trộn B1/B2 vào A1/A2)
   function enrichTo50Items(lesson, idx) {
     const seen = new Set();
     const list = [];
@@ -812,11 +855,12 @@
     };
     if (Array.isArray(lesson.items)) lesson.items.forEach(add);
 
-    const primary = LEVEL_POOLS[lesson.level] || LEVEL_POOLS.A1;
-    const all = [...primary, ...LEVEL_POOLS.A1, ...LEVEL_POOLS.A2, ...LEVEL_POOLS.B1, ...LEVEL_POOLS.B2];
-    const offset = (idx * 5) % all.length;
-    for (let i = 0; i < all.length && list.length < 50; i++) {
-      add(all[(offset + i) % all.length]);
+    const sameLevelPool = LEVEL_POOLS[lesson.level] || LEVEL_POOLS.A1;
+    if (sameLevelPool.length > 0 && list.length < 50) {
+      const offset = (idx * 5) % sameLevelPool.length;
+      for (let i = 0; i < sameLevelPool.length && list.length < 50; i++) {
+        add(sameLevelPool[(offset + i) % sameLevelPool.length]);
+      }
     }
     return list.slice(0, 50);
   }
@@ -847,7 +891,7 @@
   let justCheckedCorrect = false;
   let activeNotebookTab = 'current';
   let stickerTimer = null;
-  let currentContextBlankTarget = null; // Lưu từ cần điền khi bật chế độ Điền từ ngữ cảnh
+  let currentContextBlankTarget = null;
 
   let progressMap = safeGetJSON('ee_progress', {});
   let mistakesList = safeGetJSON('ee_mistakes', []);
@@ -949,7 +993,7 @@
         document.getElementById('userAvatarImg').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
 
         banner.className = 'sync-banner';
-        banner.innerHTML = `☁️ Đã kết nối đám mây: <strong>${user.displayName || user.email}</strong> — Tiến độ học của bạn được tự động lưu trữ an toàn.`;
+        banner.innerHTML = `☁️ Đã kết nối đám mây: <strong>${escapeHtml(user.displayName || user.email)}</strong> — Tiến độ học của bạn được tự động lưu trữ an toàn.`;
 
         try {
           const snap = await db.collection('users').doc(user.uid).get();
@@ -1004,7 +1048,7 @@
       snapshot.forEach(doc => allStudentsCache.push(doc.data()));
       renderAdminTable();
     }, err => {
-      document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="6" style="color:#f87171;">Lỗi tải dữ liệu: ${err.message}</td></tr>`;
+      document.getElementById('adminTableBody').innerHTML = `<tr><td colspan="6" style="color:#f87171;">Lỗi tải dữ liệu: ${escapeHtml(err.message)}</td></tr>`;
     });
   }
 
@@ -1054,8 +1098,8 @@
           <div style="display:flex; align-items:center; gap:9px;">
             <img src="${st.photoURL || 'https://www.gravatar.com/avatar/?d=mp'}" style="width:32px; height:32px; border-radius:50%;" />
             <div>
-              <div style="font-weight:700; color:#f8fafc;">#${idx + 1} ${st.name || 'Học viên'}</div>
-              <div style="font-size:0.78rem; color:var(--text-muted);">${st.email || ''}</div>
+              <div style="font-weight:700; color:#f8fafc;">#${idx + 1} ${escapeHtml(st.name || 'Học viên')}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">${escapeHtml(st.email || '')}</div>
             </div>
           </div>
         </td>
@@ -1064,7 +1108,7 @@
           <div style="font-size:0.78rem; color:#fbbf24;">🔥 Kỷ lục chuỗi: ${st.bestStreak || st.streak || 0}</div>
         </td>
         <td style="font-weight:800; color:#34d399; font-size:1rem;">${total} câu</td>
-        <td style="color:var(--primary); font-size:0.84rem;">${st.lastLessonTitle || 'Chưa vào bài'}</td>
+        <td style="color:var(--primary); font-size:0.84rem;">${escapeHtml(st.lastLessonTitle || 'Chưa vào bài')}</td>
         <td><span class="${timeInfo.isOnline ? 'online-dot' : 'offline-dot'}"></span>${timeInfo.text}</td>
         <td><button class="btn btn-sm btn-primary" onclick='showStudentDetail(${JSON.stringify(st.uid)})'>🔍 Chi tiết</button></td>
       `;
@@ -1083,7 +1127,7 @@
       const done = Array.isArray(pMap[l.id]) ? pMap[l.id].length : 0;
       if (done > 0) {
         lessonRows += `<div style="display:flex; justify-content:space-between; padding:6px 10px; background:rgba(30,41,59,0.7); border-radius:8px; margin-bottom:6px;">
-          <span>${l.title}</span>
+          <span>${escapeHtml(l.title)}</span>
           <strong style="color:#34d399;">${done} / ${l.items.length} câu</strong>
         </div>`;
       }
@@ -1092,7 +1136,7 @@
 
     const mistakes = Array.isArray(st.mistakesList) ? st.mistakesList : [];
     const mistakeHtml = mistakes.length
-      ? mistakes.slice(0, 15).map(m => `<span style="display:inline-block; background:rgba(239,68,68,0.2); color:#fca5a5; padding:3px 8px; border-radius:6px; margin:3px; font-size:0.82rem;">${m.split('|')[0].trim()}</span>`).join('')
+      ? mistakes.slice(0, 15).map(m => `<span style="display:inline-block; background:rgba(239,68,68,0.2); color:#fca5a5; padding:3px 8px; border-radius:6px; margin:3px; font-size:0.82rem;">${escapeHtml(m.split('|')[0].trim())}</span>`).join('')
       : '<span style="color:var(--text-muted);">Chưa ghi nhận lỗi sai nào.</span>';
 
     document.getElementById('sdContent').innerHTML = `
@@ -1263,7 +1307,7 @@
       const pct = Math.round((doneArr.length / lesson.items.length) * 100);
       const card = document.createElement('div');
       card.className = 'lesson-card';
-      card.innerHTML = `<div><span class="level-tag level-${lesson.level}">Trình độ ${lesson.level}</span><h3>${lesson.title}</h3><p>${lesson.desc}</p></div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-text"><span>${doneArr.length}/${lesson.items.length} câu</span><span>${pct}% hoàn thành</span></div></div>`;
+      card.innerHTML = `<div><span class="level-tag level-${lesson.level}">Trình độ ${lesson.level}</span><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.desc)}</p></div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-text"><span>${doneArr.length}/${lesson.items.length} câu</span><span>${pct}% hoàn thành</span></div></div>`;
       card.onclick = () => startLesson(lesson);
       grid.appendChild(card);
     });
@@ -1379,7 +1423,6 @@
       return;
     }
 
-    // Tìm các từ nội dung (ưu tiên động từ chia thì / danh từ số nhiều) để đục lỗ
     const candidates = [];
     tokens.forEach((tok, idx) => {
       const clean = tok.replace(/[^a-zA-Z']/g, '');
@@ -1404,8 +1447,8 @@
       : ` <span style="color:#94a3b8;">(${chosen.clean.length} chữ cái)</span>`;
 
     const maskedSentence = tokens.map((tok, idx) => {
-      if (idx !== chosen.idx) return tok;
-      return tok.replace(chosen.clean, `______${lemmaHint}`);
+      if (idx !== chosen.idx) return escapeHtml(tok);
+      return escapeHtml(tok).replace(escapeHtml(chosen.clean), `______${lemmaHint}`);
     }).join(' ');
 
     document.getElementById('contextBlankSentence').innerHTML = maskedSentence;
@@ -1497,7 +1540,6 @@
     return str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"]/g, '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
   }
 
-  // Gợi ý thông minh: 1 chữ cái nếu là từ đơn (hoặc điền 1 từ ngữ cảnh), 1 từ nếu là câu dài
   function hintNextStep() {
     const item = parseItem(activeItems[currentIndex]);
     const inputEl = document.getElementById('userInput');
@@ -1586,6 +1628,7 @@
       .then(() => alert(`✅ Đã copy ${list.length} mục! Dán ngay ra Zalo hoặc Word.`));
   }
 
+  // Đã sửa: KHÔNG làm lộ từ đáp án khi bấm Kiểm tra mà gõ sai
   function checkAnswer() {
     const rawItem = activeItems[currentIndex];
     const targetStr = currentContextBlankTarget ? currentContextBlankTarget : parseItem(rawItem).en;
@@ -1597,11 +1640,26 @@
 
     let html = '<div style="margin-bottom:8px; font-weight:600;">Kết quả đối chiếu:</div><div>';
     let allCorrect = (targetNorm.length === userNorm.length);
+
     targetNorm.forEach((word, idx) => {
-      if (userNorm[idx] === word) html += `<span class="word-chip word-ok">${word}</span>`;
-      else if (userNorm[idx]) { html += `<span class="word-chip word-err">${userNorm[idx]}</span><span class="word-chip word-miss">${word}</span>`; allCorrect = false; }
-      else { html += `<span class="word-chip word-miss">___</span>`; allCorrect = false; }
+      if (userNorm[idx] === word) {
+        html += `<span class="word-chip word-ok">${escapeHtml(word)}</span>`;
+      } else if (userNorm[idx]) {
+        html += `<span class="word-chip word-err">${escapeHtml(userNorm[idx])}</span>`;
+        allCorrect = false;
+      } else {
+        html += `<span class="word-chip word-miss">___</span>`;
+        allCorrect = false;
+      }
     });
+
+    // Hiển thị các từ gõ thừa (nếu người dùng gõ nhiều từ hơn đáp án)
+    if (userNorm.length > targetNorm.length) {
+      allCorrect = false;
+      for (let idx = targetNorm.length; idx < userNorm.length; idx++) {
+        html += `<span class="word-chip word-err">${escapeHtml(userNorm[idx])}</span>`;
+      }
+    }
     html += '</div>';
 
     cardBox.classList.remove('glow-ok', 'shake-err');
@@ -1631,7 +1689,7 @@
       playTone('error'); streak = 0; justCheckedCorrect = false;
       cardBox.classList.add('shake-err');
       triggerRandomSticker('wrong', 0);
-      html += `<div style="margin-top:10px; color:#f87171; font-size:0.9rem;">⚠️ Chưa khớp hoàn toàn, nghe lại và sửa các từ màu đỏ/vàng nhé!</div>`;
+      html += `<div style="margin-top:10px; color:#f87171; font-size:0.9rem;">⚠️ Chưa khớp hoàn toàn! Hãy nghe lại và sửa các từ màu đỏ / điền vào ô <strong>___</strong> (bấm <strong>"💡 Gợi ý"</strong> hoặc <strong>"👁️ Hiện đáp án"</strong> nếu cần xem).</div>`;
       if (!mistakesList.includes(rawItem)) {
         mistakesList.push(rawItem);
         localStorage.setItem('ee_mistakes', JSON.stringify(mistakesList));
@@ -1685,7 +1743,7 @@
     }
   });
 
-  // --- NUMBER LISTENING PRACTICE MODULE (50 QUESTIONS PER PART) ---
+  // --- NUMBER LISTENING PRACTICE MODULE (50 QUESTIONS PER PART - KHÔNG LỘ ĐÁP ÁN) ---
   const NUMBER_SET_SIZE = 50;
   let currentNumberMode = 'ALL';
   let currentNumberList = [];
@@ -1734,15 +1792,14 @@
 
   function generateTeenTyQuestion(indexInSet = -1) {
     const pairs = [
-      { teen: 13, teenWord: 'thirteen', ty: 30, tyWord: 'thirty', pairLabel: '13 vs 30' },
-      { teen: 14, teenWord: 'fourteen', ty: 40, tyWord: 'forty', pairLabel: '14 vs 40' },
-      { teen: 15, teenWord: 'fifteen', ty: 50, tyWord: 'fifty', pairLabel: '15 vs 50' },
-      { teen: 16, teenWord: 'sixteen', ty: 60, tyWord: 'sixty', pairLabel: '16 vs 60' },
-      { teen: 17, teenWord: 'seventeen', ty: 70, tyWord: 'seventy', pairLabel: '17 vs 70' },
-      { teen: 18, teenWord: 'eighteen', ty: 80, tyWord: 'eighty', pairLabel: '18 vs 80' },
-      { teen: 19, teenWord: 'nineteen', ty: 90, tyWord: 'ninety', pairLabel: '19 vs 90' }
+      { teen: 13, teenWord: 'thirteen', ty: 30, tyWord: 'thirty' },
+      { teen: 14, teenWord: 'fourteen', ty: 40, tyWord: 'forty' },
+      { teen: 15, teenWord: 'fifteen', ty: 50, tyWord: 'fifty' },
+      { teen: 16, teenWord: 'sixteen', ty: 60, tyWord: 'sixty' },
+      { teen: 17, teenWord: 'seventeen', ty: 70, tyWord: 'seventy' },
+      { teen: 18, teenWord: 'eighteen', ty: 80, tyWord: 'eighty' },
+      { teen: 19, teenWord: 'nineteen', ty: 90, tyWord: 'ninety' }
     ];
-    // Đảm bảo rải đều tất cả 14 số (13..19 và 30..90) trong bộ 50 câu
     let p, isTeen;
     if (indexInSet >= 0) {
       const slot = indexInSet % 14;
@@ -1760,8 +1817,8 @@
     return {
       mode: 'TEEN_TY',
       categoryLabel: '🔄 Cặp dễ nhầm (-teen vs -ty)',
-      hint: `Phân biệt cặp số dễ nhầm (${p.pairLabel})`,
-      formatExample: 'Ví dụ gõ: 14 hoặc 40',
+      hint: 'Phân biệt cặp số dễ nhầm (-teen vs -ty)',
+      formatExample: 'Ví dụ gõ: 15 hoặc 50',
       displayAnswer: String(val),
       spokenText: word,
       spokenExplanation: `"${word}" — ${note}`,
@@ -1795,20 +1852,17 @@
     while (digits.length < len) {
       const r = Math.random();
       if (r < 0.22 && digits.length >= 2 && digits[digits.length - 1] !== digits[digits.length - 2]) {
-        digits.push(digits[digits.length - 1]); // Tạo cặp double
+        digits.push(digits[digits.length - 1]);
       } else if (r < 0.38) {
-        digits.push('0'); // Tạo số 0 ("oh")
+        digits.push('0');
       } else {
         digits.push(String(Math.floor(Math.random() * 10)));
       }
     }
     const raw = digits.join('');
-    let chunks;
-    if (len === 10) {
-      chunks = [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 10)];
-    } else {
-      chunks = [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 9)];
-    }
+    const chunks = len === 10
+      ? [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 10)]
+      : [raw.slice(0, 3), raw.slice(3, 6), raw.slice(6, 9)];
     const display = chunks.join(' ');
     const spokenChunks = chunks.map(chunkToSpokenPhone);
     const spokenText = spokenChunks.join(', ');
@@ -1816,7 +1870,7 @@
       mode: 'PHONE',
       categoryLabel: '📞 Số điện thoại',
       hint: `Số điện thoại (${len} chữ số, đọc theo cụm tự nhiên có "oh" & "double")`,
-      formatExample: 'Ví dụ gõ: 0987654321 hoặc 098 765 4321',
+      formatExample: 'Ví dụ gõ: 0912345678 hoặc 091 234 5678',
       displayAnswer: display,
       spokenText,
       spokenExplanation: `"${spokenChunks.join(' — ')}" ("oh" = 0, "double" = lặp 2 số giống nhau)`,
@@ -1864,7 +1918,7 @@
       mode: 'PRICE',
       categoryLabel: '💰 Giá tiền',
       hint: `Giá tiền (${currency === '$' ? 'Đô la Mỹ $' : 'Bảng Anh £'})`,
-      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${displayAnswer.replace(/[$,£]/g, '')}`,
+      formatExample: currency === '$' ? 'Ví dụ gõ: $12.50 hoặc 12.50' : 'Ví dụ gõ: £45.99 hoặc 45.99',
       displayAnswer,
       spokenText,
       spokenExplanation: `"${spokenText}"`,
@@ -1921,7 +1975,7 @@
       mode: 'DATE',
       categoryLabel: '📅 Ngày tháng & Năm',
       hint: 'Ngày tháng & Năm (Chấp nhận gõ chữ hoặc số ngày/tháng/năm)',
-      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${day}/${m.num}/${year}`,
+      formatExample: 'Ví dụ gõ: 15th May 2000 hoặc 15/5/2000',
       displayAnswer,
       spokenText,
       spokenExplanation: `"${spokenText}"`,
@@ -1963,7 +2017,7 @@
       mode: 'TIME',
       categoryLabel: '⏰ Giờ giấc',
       hint: 'Giờ giấc (Đổi sang dạng số Giờ:Phút)',
-      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${String(h).padStart(2, '0')}:${mStr}`,
+      formatExample: 'Ví dụ gõ: 7:45 hoặc 07:45',
       displayAnswer,
       spokenText: picked.spoken,
       spokenExplanation: `"${picked.spoken}" → ${displayAnswer}`,
@@ -1988,7 +2042,7 @@
         mode: 'LARGE_PCT',
         categoryLabel: '📈 Số lớn & Phần trăm',
         hint: 'Số lớn hàng nghìn / trăm nghìn',
-        formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${val}`,
+        formatExample: 'Ví dụ gõ: 12,500 hoặc 12500',
         displayAnswer,
         spokenText,
         spokenExplanation: `"${spokenText}"`,
@@ -2021,8 +2075,8 @@
       return {
         mode: 'LARGE_PCT',
         categoryLabel: '📈 Số lớn & Phần trăm',
-        hint: 'Số hàng triệu (Có thể gõ "3.5 million", "3.5m" hoặc viết đủ số 0)',
-        formatExample: `Ví dụ gõ: ${displayAnswer}, ${item.whole}.${item.dec}m hoặc ${item.val}`,
+        hint: 'Số hàng triệu (Có thể gõ "million", "m" hoặc viết đủ số 0)',
+        formatExample: 'Ví dụ gõ: 3.5 million, 3.5m hoặc 3500000',
         displayAnswer,
         spokenText,
         spokenExplanation: `"${spokenText}"`,
@@ -2054,7 +2108,7 @@
       mode: 'LARGE_PCT',
       categoryLabel: '📈 Số lớn & Phần trăm',
       hint: 'Số thập phân & Phần trăm (%)',
-      formatExample: `Ví dụ gõ: ${displayAnswer} hoặc ${numStr}`,
+      formatExample: 'Ví dụ gõ: 45.5% hoặc 45.5',
       displayAnswer,
       spokenText,
       spokenExplanation: `"${spokenText}"`,
@@ -2079,7 +2133,6 @@
     }
   }
 
-  // Tạo bộ đúng 50 câu cho phần được chọn, ưu tiên không trùng lặp câu liên tiếp
   function build50NumberQuestions(mode) {
     const list = [];
     const seenSpoken = new Set();
@@ -2096,7 +2149,6 @@
       seenSpoken.add(q.spokenText);
       list.push(q);
     }
-    // Xáo trộn thứ tự trong 50 câu và tránh 2 câu giống nhau đứng sát nhau
     for (let i = list.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [list[i], list[j]] = [list[j], list[i]];
@@ -2156,7 +2208,6 @@
       return validTimes.has(cleaned);
     }
 
-    // Chuẩn hóa chung: bỏ khoảng trắng, dấu gạch ngang, dấu phẩy ngăn nghìn, ký hiệu tiền tệ $/£, dấu %
     const normUser = rawLower.replace(/[\s,\-$£]/g, '');
     const normUserNoPct = normUser.replace(/%|percent/g, '');
     return (q.acceptedNorms || []).some(acc => {
@@ -2217,7 +2268,7 @@
     numAttemptedThisQuestion = false;
     updateNumberAnswerRevealUI();
 
-    document.getElementById('numItemCounter').textContent = `Câu ${currentNumberIdx + 1} / ${ currentNumberList.length }`;
+    document.getElementById('numItemCounter').textContent = `Câu ${currentNumberIdx + 1} / ${currentNumberList.length}`;
     document.getElementById('numCategoryBadge').textContent = currentNumberQuestion.categoryLabel;
     document.getElementById('numTypeHintText').textContent = currentNumberQuestion.hint;
     document.getElementById('numFormatExample').textContent = currentNumberQuestion.formatExample;
@@ -2295,9 +2346,9 @@
       triggerRandomSticker('correct', numSessionStreak);
       feedback.innerHTML = `
         <div style="color:#34d399; font-weight:800; font-size:1.05rem;">
-          🎉 Chính xác! (Câu ${currentNumberIdx + 1}/${currentNumberList.length}) — Đáp án chuẩn: <span style="color:var(--primary);">${currentNumberQuestion.displayAnswer}</span>
+          🎉 Chính xác! (Câu ${currentNumberIdx + 1}/${currentNumberList.length}) — Đáp án chuẩn: <span style="color:var(--primary);">${escapeHtml(currentNumberQuestion.displayAnswer)}</span>
         </div>
-        <div class="num-spoken-text">🗣️ Cách đọc: ${currentNumberQuestion.spokenExplanation}</div>
+        <div class="num-spoken-text">🗣️ Cách đọc: ${escapeHtml(currentNumberQuestion.spokenExplanation)}</div>
         <div style="margin-top:6px; font-size:0.82rem; color:var(--text-muted);">Nhấn <kbd>Enter</kbd> để qua câu tiếp theo (${Math.min(currentNumberIdx + 2, currentNumberList.length)}/${currentNumberList.length}).</div>
       `;
     } else {
@@ -2308,7 +2359,7 @@
       triggerRandomSticker('wrong', 0);
       feedback.innerHTML = `
         <div style="color:#f87171; font-weight:700;">
-          ⚠️ Chưa chính xác! Bạn vừa gõ: <span class="word-chip word-err">${userVal || '(trống)'}</span>
+          ⚠️ Chưa chính xác! Bạn vừa gõ: <span class="word-chip word-err">${escapeHtml(userVal || '(trống)')}</span>
         </div>
         <div style="margin-top:6px; font-size:0.86rem; color:#cbd5e1;">
           Hãy bấm <kbd>Tab</kbd> để nghe lại hoặc bấm <strong>"👁️ Xem đáp án"</strong> để đối chiếu cách đọc tiếng Anh nhé!
